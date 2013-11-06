@@ -10,12 +10,11 @@ The code creates the models that investigate how Molt stage (Molt_model.Rmd), We
 arrival in Arizona (Arrival_model.Rmd) are affected by resource availability (NDVI) and physiological demand 
 (operative temperature).
 
-
-.Rmd (Rmarkdown) files describe each of the analyses and .html files generated from them. 
-
-The data sets (.rdata files) are kept on a personal computer (for now). 
-
-Functions (.r files) called by the code described in the different .Rmd files.
+Files
+-------
+  * .Rmd (Rmarkdown) files describe each of the analyses and .html files generated from them. 
+  * The data sets (.rdata files) are kept on a personal computer (for now). 
+  * Functions (.r files) called by the code described in the different .Rmd files.
 
 
 Code that generates the standard operative temperature estimates and NDVI summaries is not included here. 
@@ -25,5 +24,4 @@ To run the code (the .Rmd should guide you through), the only thing to do is cha
 make sure you have the required libraries installed. 
 
 *contact* S.R. Supp
-
 *email*: sarah@weecology.org
