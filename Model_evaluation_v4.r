@@ -1,3 +1,13 @@
+# code for evaluating mixed models and quantile regresstion for the "extreme limits" hummingbird paper
+# modified from P.A. Beck
+
+# import packages
+require(lme4)
+require(bbmle)
+
+# source data and r files
+source('/Users/sarah/Documents/GitHub/extreme_limits/Plot_conditional_effects_interaction_models.r')
+
 
 mod.evaluation <- function(yname,D = "yearly.Te.10C.q",R = "NDVI",N = "n.birds",
                            ordered.fac.treatment = c("as.num","as.binomial"),
@@ -26,7 +36,7 @@ mod.evaluation <- function(yname,D = "yearly.Te.10C.q",R = "NDVI",N = "n.birds",
   #year2excl: specify any years that need to be excluded from the model
   
   
-  require(lme4)
+
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # get the variables
@@ -112,8 +122,8 @@ mod.evaluation <- function(yname,D = "yearly.Te.10C.q",R = "NDVI",N = "n.birds",
     mod.D <- glmer(formula = y ~ D + (1|LOC.),weights=nbirds.,family="binomial")
     mod.R <- glmer(formula = y ~ R + (1|LOC.),weights=nbirds.,family="binomial")
     mod.0 <- glmer(formula = y ~ 1 + (1|LOC.),weights=nbirds.,family="binomial")
-    
-  }else{
+    }
+  else{
     #for all other models
     mod.DR <- lmer(formula = y ~ D*R + (1|LOC.),weights=nbirds.)
     mod.D_R <- lmer(formula = y ~ D + R + (1|LOC.),weights=nbirds.)
@@ -125,7 +135,6 @@ mod.evaluation <- function(yname,D = "yearly.Te.10C.q",R = "NDVI",N = "n.birds",
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   #in the D*R model, under what conditions are the D (R) terms negative?
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  source('D:\\Hummer_code_transfer\\Plot_conditional_effects_interaction_models.r')
   cat("Conditional effects of predictors in full model, i.e. including R*D interaction\n")
   win.graph(w=8,h=8);par(mfcol=c(2,2))
   
@@ -139,8 +148,7 @@ mod.evaluation <- function(yname,D = "yearly.Te.10C.q",R = "NDVI",N = "n.birds",
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # get the AIC  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  require(bbmle)
-  
+
   #since 'n' is not defined in a mixed model, calculate a liberal AIC (mod.AIC.CON)
   #assuing n is the nr of data points (nobs.HI), and a liberal AIC (mod.AIC.LIB) assuming n is the nr of groupd (nobs.LO)
   nobs.HI <- nrow(mod.DR@frame)
