@@ -18,9 +18,11 @@ Files
 
 Requirements
 -------------
- * lme4
  * bbmle
  * knitr
+ * lme4
+ * lattice
+ * latticeExtra
 
 Code that generates the standard operative temperature estimates and NDVI summaries is not included here. 
 Instead, the different .Rmd files load the yearly summaries of those variables. Contact P.A.B. for that code.
