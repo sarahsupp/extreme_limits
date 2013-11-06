@@ -5,25 +5,25 @@ This document describes the model of Arrival/catch observed in Arizona and how i
 
 ```{r}
 #load the Hummingbird arrival data; i.e. the d.f. yearly.catch.stat
-load("D:\\Hummer_code_transfer\\yearly.catch.stat.rdata")
+load("/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.catch.stat.rdata")
 ```
 
 ```{r}
 #Calculate quantiles of arrival distribution per site & year ('sess.quant...'). quant.50 indicates the median arrival date at a given site and year.
 
-yearly.catch.stat$sess.quant.05 <- as.Date(yearly.catch.stat$sess.quant.05,origin="2015-01-01")
-yearly.catch.stat$sess.quant.25 <- as.Date(yearly.catch.stat$sess.quant.25,origin="2015-01-01")
-yearly.catch.stat$sess.quant.50 <- as.Date(yearly.catch.stat$sess.quant.50,origin="2015-01-01")
-yearly.catch.stat$sess.quant.75 <- as.Date(yearly.catch.stat$sess.quant.75,origin="2015-01-01")
-yearly.catch.stat$sess.quant.95 <- as.Date(yearly.catch.stat$sess.quant.95,origin="2015-01-01")
+yearly.catch.stat$sess.quant.05 <- as.Date(yearly.catch.stat$sess.quant.05, origin="2015-01-01")
+yearly.catch.stat$sess.quant.25 <- as.Date(yearly.catch.stat$sess.quant.25, origin="2015-01-01")
+yearly.catch.stat$sess.quant.50 <- as.Date(yearly.catch.stat$sess.quant.50, origin="2015-01-01")
+yearly.catch.stat$sess.quant.75 <- as.Date(yearly.catch.stat$sess.quant.75, origin="2015-01-01")
+yearly.catch.stat$sess.quant.95 <- as.Date(yearly.catch.stat$sess.quant.95, origin="2015-01-01")
 #note that in the sess.quant variables the year is irrelevant
 ````
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the arrival/catch metrics in the data frame 'yearly.catch.stat' to be used for modelling
 ````{r}
-load("D:\\Hummer_code_transfer\\yearly.climate.rdata")
+load("/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.climate.rdata")
 #gives you yearly.climate
-yearly.catch.stat <- merge(yearly.catch.stat,yearly.climate)
+yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)
 rm(yearly.climate)
 ````
 
@@ -31,19 +31,19 @@ Plot arrival responses to a proxy for physiological (yearly.Te.10C.q) demand and
 ```{r fig.width=7, fig.height=6, warning=FALSE}
 require(lattice)
 require(latticeExtra)
-xyplot(sess.quant.50~yearly.Te.10C.q|LOC,data=yearly.catch.stat)+layer(panel.smoother(x, y, method = "lm"))
-xyplot(sess.quant.50~winterNDVI|LOC,data=yearly.catch.stat)+layer(panel.smoother(x, y, method = "lm"))
+xyplot(sess.quant.50 ~ yearly.Te.10C.q|LOC, data=yearly.catch.stat) + layer(panel.smoother(x, y, method = "lm"))
+xyplot(sess.quant.50 ~ winterNDVI|LOC, data=yearly.catch.stat) + layer(panel.smoother(x, y, method = "lm"))
 ```
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
-source('D:\\Hummer_code_transfer\\Model_evaluation_v4.r')
+source('/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/Model_evaluation_v4.r')
 ````
 
 Using aforementioned function evaluate hierarchical models of median Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
 ````{r}
 attach(yearly.catch.stat)
 #http://www.quantpsy.org/interact/interactions.htm
-mod.evaluation(yname='sess.quant.50',centering='CGM',stand=T,ordered.fac.treatment = "as.num",log.D=T,R="winterNDVI",D="yearly.Te.10C.q",N = "n.birds")
+mod.evaluation(yname='sess.quant.50', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI", D="yearly.Te.10C.q", N = "n.birds")
 detach(yearly.catch.stat)
 ````
