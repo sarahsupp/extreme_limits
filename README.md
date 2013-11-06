@@ -16,6 +16,11 @@ Files
   * The data sets (.rdata files) are kept on a personal computer (for now). 
   * Functions (.r files) called by the code described in the different .Rmd files.
 
+Requirements
+-------------
+ * lme4
+ * bbmle
+ * knitr
 
 Code that generates the standard operative temperature estimates and NDVI summaries is not included here. 
 Instead, the different .Rmd files load the yearly summaries of those variables. Contact P.A.B. for that code.
