@@ -97,7 +97,7 @@ Using aforementioned function evaluate hierarchical models of weight as a linear
 ````{r}
 attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
-mod.evaluation(yname='Weight', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
+mod.evaluation(yname='Weight', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="minwinterNDVI", D="yearly.Te.10C.q", N=NULL)
 
 detach(yearly.weight.stat)
 ````
