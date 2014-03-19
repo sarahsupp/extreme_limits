@@ -37,7 +37,7 @@ xyplot(sess.quant.50 ~ winterNDVI|LOC, data=yearly.catch.stat) + layer(panel.smo
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
-source('/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/Model_evaluation_v4.r')
+source('/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ````
 
 Using aforementioned function evaluate hierarchical models of median Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
