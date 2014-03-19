@@ -14,14 +14,14 @@ How does weight vary with fat?
 site.dat$Fat[site.dat$Fat=="P"] <- 0
 orderfat <- function(x){ordered(x, levels=c(0, "T" ,1:3))}
 site.dat$Fat <- orderfat(site.dat$Fat)
-plot(site.dat$Weight ~ site.dat$Fat, col="light grey")
+plot(site.dat$Weight ~ site.dat$Fat, col="light grey", xlab = "Fat", ylab = "Weight")
 ```
 
 How does weight vary with molt?
 ````{r}
 ordermolt <- function(x){ordered(toupper(x), levels=c("M","R",1:8,0,9,"F","L"))}
 site.dat$PriMary.Molt <- ordermolt(site.dat$PriMary.Molt)
-plot(site.dat$Weight ~ site.dat$PriMary.Molt, col="light grey")
+plot(site.dat$Weight ~ site.dat$PriMary.Molt, col="light grey", xlab = "Primary Molt", ylab = "Weight")
 ````
 
 FYI: How are observations distributed across Molt classes?
@@ -46,7 +46,7 @@ tt[tt<.2]
 Which pairs of body molt classes differ in weight?
 ````{r}
 site.dat$Body.Molt <- ordermolt(site.dat$Body.Molt)
-plot(site.dat$Weight ~ site.dat$Body.Molt, col="light grey")
+plot(site.dat$Weight ~ site.dat$Body.Molt, col="light grey", xlab="Body Molt Class", ylab="Weight")
 table(site.dat$Body.Molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Body.Molt))[[1]][,4]),3)
 tt[tt<.2]
@@ -54,7 +54,7 @@ tt[tt<.2]
 Which pairs of gorget/head molt classes differ in weight?
 ````{r}
 site.dat$Gorget.head.molt <- ordermolt(site.dat$Gorget.head.molt)
-plot(site.dat$Weight ~ site.dat$Gorget.head.molt, col="light grey")
+plot(site.dat$Weight ~ site.dat$Gorget.head.molt, col="light grey",xlab="gorget head molt", ylab="Weight")
 table(site.dat$Gorget.head.molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Gorget.head.molt))[[1]][,4]),3)
 tt[tt<.2]
@@ -62,7 +62,7 @@ tt[tt<.2]
 Which pairs of tail molt classes differ in weight?
 ````{r}
 site.dat$Tail.Molt <- ordermolt(site.dat$Tail.Molt)
-plot(site.dat$Weight ~ site.dat$Tail.Molt, col="light grey")
+plot(site.dat$Weight ~ site.dat$Tail.Molt, col="light grey", xlab="tail molt", ylab="Weight")
 table(site.dat$Tail.Molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Tail.Molt))[[1]][,4]),3)
 tt[tt<.2]
@@ -90,7 +90,7 @@ xyplot(Weight ~ winterNDVI|LOC, data=yearly.weight.stat) + layer(panel.smoother(
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
-source('/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/Model_evaluation_v4.r')
+source('/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ````
 
 Using aforementioned function evaluate hierarchical models of weight as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
