@@ -5,7 +5,7 @@ This document describes the model of Arrival/catch observed in Arizona and how i
 
 ```{r}
 #load the Hummingbird arrival data; i.e. the d.f. yearly.catch.stat
-load("/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.catch.stat.rdata")
+load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.catch.stat.rdata")
 ```
 
 ```{r}

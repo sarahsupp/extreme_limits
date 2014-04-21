@@ -5,7 +5,7 @@ This document describes the model of Weight observed in Arizona and how it covar
 
 ```{r}
 #load the Hummingbird data; i.e. the d.f. site.dat
-load("/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
+load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
 ```
 
 How does weight vary with fat?
