@@ -123,7 +123,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # plot the predictor variables
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  #win.graph(w=9, h=4)
+  win.graph(w=9, h=4)
   par(mfrow=c(1,3))
   hist(unique(D), col="light grey", ylim = c(0,5))
   hist(unique(R),col="light grey", ylim = c(0,5))
@@ -166,8 +166,9 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # get the AIC  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  #since 'n' is not defined in a mixed model, calculate a liberal AIC (mod.AIC.CON)
-  #assuing n is the nr of data points (nobs.HI), and a liberal AIC (mod.AIC.LIB) assuming n is the nr of groupd (nobs.LO)
+  #since 'n' is not defined in a mixed model, calculate a liberal AIC (mod.AIC.LIB)
+  #assuming n is the number of data points (nobs.HI), and a conservative AIC (mod.AIC.CON) 
+  #assuming n is the number of groups (nobs.LO)
   nobs.HI <- nrow(mod.DR@frame)
   nobs.LO <- nlevels(mod.DR@frame$LOC)
   
@@ -178,7 +179,8 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   colnames(mod.AIC) <- c('dAICc.lib', 'dAICCc.con', 'df')
   rownames(mod.AIC) <- c('mod.DR', 'mod.D', 'mod.R', 'mod.0', 'mod.D_R')
   
-  #calculate Akaike weights sensu http://www.planta.cn/forum/files_planta/2006_nobbs_ecology_153.pdf
+  #calculate Akaike weights sensu Hobbs & Hilborn 2006
+  #http://www.planta.cn/forum/files_planta/2006_nobbs_ecology_153.pdf
   Akaike.weight <- function(AIC.vec){
     AIC.vec <- AIC.vec-min(AIC.vec,na.rm=T)
     Akai.weight.denom <- sum(exp(-2*AIC.vec))

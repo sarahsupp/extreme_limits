@@ -93,6 +93,7 @@ source('C:/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ````
 
 Using aforementioned function evaluate hierarchical models of median Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
+###Numeric
 ````{r}
 attach(yearly.molt.stat)
 #http://www.quantpsy.org/interact/interactions.htm
@@ -100,3 +101,14 @@ mod.evaluation(yname='MOLT.quant.50', centering='CGM', stand=T, ordered.fac.trea
                log.D=T, R="minwinterNDVI", D="yearly.Te.10C.q")
 detach(yearly.molt.stat)
 ````
+
+Using aforementioned function evaluate hierarchical models of median Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
+###Binomial
+````{r}
+attach(yearly.molt.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='MOLT.quant.50', centering='CGM', stand=T, ordered.fac.treatment = "as.binomial", 
+               log.D=T, R="minwinterNDVI", D="yearly.Te.10C.q")
+detach(yearly.molt.stat)
+````
+
