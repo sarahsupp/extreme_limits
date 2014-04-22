@@ -45,5 +45,6 @@ Using aforementioned function evaluate hierarchical models of median Molt stage 
 attach(yearly.catch.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='sess.quant.50', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="minwinterNDVI", D="yearly.Te.10C.q", N = "n.birds")
+mod.evaluation(yname='sess.quant.50',centering='CGM',stand=T,log.D=T,R="minwinterNDVI") 
 detach(yearly.catch.stat)
 ````
