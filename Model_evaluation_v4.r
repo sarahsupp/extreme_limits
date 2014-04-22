@@ -123,7 +123,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # plot the predictor variables
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  win.graph(w=9, h=4)
+  #win.graph(w=9, h=4)
   par(mfrow=c(1,3))
   hist(unique(D), col="light grey", ylim = c(0,5))
   hist(unique(R),col="light grey", ylim = c(0,5))
@@ -153,7 +153,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #in the D*R model, under what conditions are the D (R) terms negative?
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   cat("Conditional effects of predictors in full model, i.e. including R*D interaction\n")
-  win.graph(w=8,h=8)
+  #win.graph(w=8,h=8)
   par(mfcol=c(2,2))
   
   r1 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, plott=F)
