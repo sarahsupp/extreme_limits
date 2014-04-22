@@ -6,7 +6,7 @@ require(lme4)
 require(bbmle)
 
 # source data and r files
-source('/Users/sarah/Documents/GitHub/extreme_limits/Plot_conditional_effects_interaction_models.r')
+source('C:/Users/sarah/Documents/GitHub/extreme_limits/Plot_conditional_effects_interaction_models.r')
 
 
 mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.birds",
@@ -14,7 +14,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
                            centering = c('none', 'CGM', 'CWC'), log.D = F, log.R = F,
                            standardisation = F, year2excl = NA){
   #aim: evaluation of mixed models and quantile regression for Extreme limits" Hummer project. 
-  #The model to be calibrateed has the response variable (yname) and 2 predictors (D) and (R) and its interactions.
+  #The model to be calibrated has the response variable (yname) and 2 predictors (D) and (R) and its interactions.
   #This model is then compared to all its sub-models.
   #All models contain random (intercept-)effect associated with site/location 'LOC'
   #
@@ -27,7 +27,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #       if the response variable is an ordered factor, how should it be treated? 
   #       Options are "as.num" which treats the response variable as if it were numeric, and
   #       "as.binomial" which treat it as a bernouilli experiment.
-  #centering: Should the predictor variable be centered. Options are no centering "none", "GCM" which centers
+  #centering: Should the predictor variable be centered. Options are no centering "none", "CGM" which centers
   #       the data around the grand mean, and "CWC" which centers the data around group means (both sensu EndersTofighi2007PhsychologicalMethods)
   #       Also see: http://mlrv.ua.edu/2009/vol35_1/Robinson_Schumacke_rproof.pdf
   #log.D: Should the 'D' predictor variable be log-transformed?
@@ -54,22 +54,29 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # do you want a particular year excluded?
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
-  if (!is.na(year2excl)){cat("Excluding year(s): ",year2excl,"\n")
-                         y<-y[yr!=year2excl]
-                         D<-D[yr!=year2excl]
-                         R<-R[yr!=year2excl]
-                         LOC.<-LOC[yr!=year2excl]
-                         nbirds. <- nbirds[yr!=year2excl]}else{LOC. <- LOC ; nbirds. <- nbirds}
+  if (!is.na(year2excl)){
+    cat("Excluding year(s): ",year2excl,"\n")
+    y<-y[yr!=year2excl]
+    D<-D[yr!=year2excl]
+    R<-R[yr!=year2excl]
+    LOC.<-LOC[yr!=year2excl]
+    nbirds. <- nbirds[yr!=year2excl]
+  }
+  else{
+    LOC. <- LOC ; nbirds. <- nbirds
+  }
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # do you want any of the predictors to be log transformed?
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   if (log.D){
     cat("DEMAND variable will be log-transformed\n") 
-    D <- log(D) + 1}
+    D <- log(D) + 1
+  }
   if (log.R){
     cat("RESOURCE variable will be log-transformed\n") 
-    R <- log(R) + 1}
+    R <- log(R) + 1
+  }
   cat("\nCorrelation between D and R (after transform and or subset):\n")
   print(cor.test(D, R))
   
@@ -79,12 +86,14 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   if ((is.factor(y[1])) & (ordered.fac.treatment[1] == c("as.num"))){
     cat(yname, " is an ordered factor. options are to treat as numeric or in a binomial fashion.\n")    
     cat(yname, " will be converted to numeric \n")
-    y <- as.numeric(y)}
+    y <- as.numeric(y)
+  }
   
   if ((is.factor(y[1])) & (ordered.fac.treatment[1] == c("as.binomial"))){
     cat("\n", yname, " is an ordered factor. options are to treat as numeric or in a binomial fashion !!!\n")
     cat(yname, " is an ordered factor and will be converted to a count table !!!\n")
-    y <- ordered.var.2.sim.count.table(y)}
+    y <- ordered.var.2.sim.count.table(y)
+  }
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # apply centering and standardization ####
@@ -97,7 +106,8 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   if (centering == 'CGM'){
     D <- CGM(D)
     R <- CGM(R) 
-    cat('\nPredictor variables were centered at the grand mean (CGM)\n') }
+    cat('\nPredictor variables were centered at the grand mean (CGM)\n') 
+  }
   if (centering == 'CWC'){
     D <- CWC(x=D,LOC=LOC.)
     R <- CWC(x=R,LOC=LOC.)
@@ -113,10 +123,10 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # plot the predictor variables
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  win.graph(w=9, h=4)
+  #win.graph(w=9, h=4)
   par(mfrow=c(1,3))
-  hist(unique(D), col="light grey")
-  hist(unique(R),col="light grey")
+  hist(unique(D), col="light grey", ylim = c(0,5))
+  hist(unique(R),col="light grey", ylim = c(0,5))
   plot(R,D,pch=16)
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
