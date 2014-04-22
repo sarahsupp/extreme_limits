@@ -11,8 +11,9 @@ site.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
 #make an ordered categorical variable describing primary molt
 ordermolt <- function(x){ordered(x, levels=c("M","R",1:8,0,9,"F","L"))}
 site.dat$PriMary.Molt <- ordermolt(site.dat$PriMary.Molt)
-
+hist(as.numeric(site.dat$PriMary.Molt),col="grey80", xlim = c(0,14), breaks = seq(0.5,14.5, by=1), main = "Primary Molt")
 ```
+
 
 
 ```{r}
