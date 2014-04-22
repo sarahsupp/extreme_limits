@@ -5,7 +5,7 @@ This document describes the model of Molt observed in Arizona and how it covarie
 
 ```{r}
 #load the Hummingbird data; i.e. the d.f. site.dat
-load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
+load("/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
 #keep only the variables you need
 site.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
 #make an ordered categorical variable describing primary molt
@@ -61,6 +61,31 @@ require(lattice)
 require(latticeExtra)
 xyplot(MOLT.quant.50 ~ yearly.Te.10C.q|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
 xyplot(MOLT.quant.50 ~ winterNDVI|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
+#same variables that go into the model below
+xyplot(MOLT.quant.50 ~ minwinterNDVI|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
+xyplot(MOLT.quant.50 ~ yearly.Te.10C.q|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
+
+```
+
+Plot molt responses to climate variables, which are a proxy for demand (T) and resource availability (NDVI)
+```{r fig.width = 7, fig.height = 6, warning = FALSE}
+require(ggplot2)
+
+ggplot(yearly.molt.stat, aes(minwinterNDVI, MOLT.quant.50)) + geom_point() + 
+  stat_smooth(method="lm", formula = y ~ x) + theme_classic() + facet_wrap(~LOC)
+ggplot(yearly.molt.stat, aes(yearly.Te.10C.q, MOLT.quant.50)) + geom_point() + 
+  stat_smooth(method="lm") + theme_classic() + facet_wrap(~LOC)
+
+ggplot(yearly.climate, aes(yr, NDVI)) + geom_line()
+ggplot(yearly.climate, aes(yr, minNDVI)) + geom_line() + geom_line(data=yearly.climate, aes(yr, pre, col = "red"))
+ggplot(yearly.climate, aes(yr, yearly.Te.10C.q)) + geom_line()
+ggplot(yearly.climate, aes(yr, Tmin)) + geom_line()
+ggplot(yearly.climate, aes(wintercumpre, minwinterNDVI)) + geom_point() + theme_classic()
+ggplot(yearly.climate, aes(pre, NDVI)) + geom_point() + theme_classic()
+ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + theme_classic()
+ggplot(yearly.climate, aes(winterNDVI, minwinterNDVI)) + geom_point() + theme_classic()
+ggplot(yearly.climate, aes(NDVI, winterNDVI)) + geom_point() + theme_classic()
+
 ```
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
