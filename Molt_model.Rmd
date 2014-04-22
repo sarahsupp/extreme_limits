@@ -5,7 +5,7 @@ This document describes the model of Molt observed in Arizona and how it covarie
 
 ```{r}
 #load the Hummingbird data; i.e. the d.f. site.dat
-load("/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
+load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
 #keep only the variables you need
 site.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
 #make an ordered categorical variable describing primary molt
