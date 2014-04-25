@@ -39,10 +39,18 @@ Load a function ('mod.evaluation') to evaluate hierarchical models
 source('/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ````
 
-Using aforementioned function evaluate hierarchical models of median Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
+Using aforementioned function evaluate hierarchical models of median arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
 ````{r}
 attach(yearly.catch.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='sess.quant.50',centering='CGM',stand=T,log.D=T,R="winterNDVI") 
+detach(yearly.catch.stat)
+````
+
+Using  function evaluate hierarchical models of 25th percentile arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
+````{r}
+attach(yearly.catch.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='sess.quant.25',centering='CGM',stand=T,log.D=T,R="winterNDVI") 
 detach(yearly.catch.stat)
 ````
