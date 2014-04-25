@@ -62,29 +62,6 @@ require(lattice)
 require(latticeExtra)
 xyplot(MOLT.quant.50 ~ yearly.Te.10C.q|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
 xyplot(MOLT.quant.50 ~ winterNDVI|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
-xyplot(MOLT.quant.50 ~ minwinterNDVI|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
-xyplot(MOLT.quant.50 ~ minNDVI|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
-
-```
-
-Plot molt responses to climate variables, which are a proxy for demand (T) and resource availability (NDVI)
-```{r fig.width = 7, fig.height = 6, warning = FALSE}
-require(ggplot2)
-
-ggplot(yearly.molt.stat, aes(minwinterNDVI, MOLT.quant.50)) + geom_point() + 
-  stat_smooth(method="lm", formula = y ~ x) + theme_classic() + facet_wrap(~LOC)
-ggplot(yearly.molt.stat, aes(yearly.Te.10C.q, MOLT.quant.50)) + geom_point() + 
-  stat_smooth(method="lm") + theme_classic() + facet_wrap(~LOC)
-
-ggplot(yearly.climate, aes(yr, NDVI)) + geom_line()
-ggplot(yearly.climate, aes(yr, minNDVI)) + geom_line() + geom_line(data=yearly.climate, aes(yr, pre, col = "red"))
-ggplot(yearly.climate, aes(yr, yearly.Te.10C.q)) + geom_line()
-ggplot(yearly.climate, aes(yr, Tmin)) + geom_line()
-ggplot(yearly.climate, aes(wintercumpre, minwinterNDVI)) + geom_point() + theme_classic()
-ggplot(yearly.climate, aes(pre, NDVI)) + geom_point() + theme_classic()
-ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + theme_classic()
-ggplot(yearly.climate, aes(winterNDVI, minwinterNDVI)) + geom_point() + theme_classic()
-ggplot(yearly.climate, aes(NDVI, winterNDVI)) + geom_point() + theme_classic()
 
 ```
 
@@ -93,23 +70,24 @@ Load a function ('mod.evaluation') to evaluate hierarchical models
 source('C:/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ````
 
-Using aforementioned function evaluate hierarchical models of median Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-###Numeric
-````{r}
-attach(yearly.molt.stat)
-#http://www.quantpsy.org/interact/interactions.htm
-mod.evaluation(yname='MOLT.quant.50', centering='CGM', stand=T, ordered.fac.treatment = "as.num", 
-               log.D=T, R="minwinterNDVI", D="yearly.Te.10C.q")
-detach(yearly.molt.stat)
-````
-
-Using aforementioned function evaluate hierarchical models of median Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-###Binomial
+Using  function evaluate hierarchical models of median Molt stage (50th Percentile of Molt) as a 
+linear function of annual physiological demand and resource availability, allowing for a 
+random intercept associated with 'site' 
+Binomial, using winter NDVI as resource AVAILABILITY
 ````{r}
 attach(yearly.molt.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='MOLT.quant.50', centering='CGM', stand=T, ordered.fac.treatment = "as.binomial", 
-               log.D=T, R="minwinterNDVI", D="yearly.Te.10C.q")
+               log.D=T, R="winterNDVI", D="yearly.Te.10C.q")
 detach(yearly.molt.stat)
 ````
 
+Using function evaluate hierarchical models of 25th percentile Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
+Binomial, using winter NDVI as resource AVAILABILITY
+````{r}
+attach(yearly.molt.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='MOLT.quant.25', centering='CGM', stand=T, ordered.fac.treatment = "as.binomial", 
+               log.D=T, R="winterNDVI", D="yearly.Te.10C.q")
+detach(yearly.molt.stat)
+````
