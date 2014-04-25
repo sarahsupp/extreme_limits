@@ -42,10 +42,11 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   nbirds <- NULL
   if(!is.null(N)){
     nbirds <- get(N)
-    cat("samples will be weighted by 'n.birds' in model calibration\n")}
+    cat("samples will be weighted by 'n.birds' in model calibration\n")
+  }
   else{
-    cat("all samples will be equally weighted calibration\n")} 
-  
+    cat("all samples will be equally weighted calibration\n")
+  } 
   D <- get(D)
   R <- get(R)
   mod.name <- c('mod.DR', 'mod.D', 'mod.R', 'mod.0', 'mod.D_R')
@@ -134,11 +135,16 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
   if ((ordered.fac.treatment[1] == c("as.binomial")) & (!is.null(dim(y)))){
     #for models with ordinal response variables treated as binomial counts  
-    mod.DR <- glmer(formula = y ~ D*R + (1|LOC.), weights=nbirds., family="binomial")
-    mod.D_R <- glmer(formula = y ~ D + R + (1|LOC.), weights=nbirds., family="binomial")
-    mod.D <- glmer(formula = y ~ D + (1|LOC.), weights=nbirds., family="binomial")
-    mod.R <- glmer(formula = y ~ R + (1|LOC.), weights=nbirds., family="binomial")
-    mod.0 <- glmer(formula = y ~ 1 + (1|LOC.), weights=nbirds., family="binomial")
+    mod.DR <- glmer(formula = y ~ D*R + (1|LOC.), weights=nbirds., family="binomial", 
+                    control = glmerControl(optimizer="bobyqa"))
+    mod.D_R <- glmer(formula = y ~ D + R + (1|LOC.), weights=nbirds., family="binomial", 
+                     control = glmerControl(optimizer="bobyqa"))
+    mod.D <- glmer(formula = y ~ D + (1|LOC.), weights=nbirds., family="binomial", 
+                   control = glmerControl(optimizer="bobyqa"))
+    mod.R <- glmer(formula = y ~ R + (1|LOC.), weights=nbirds., family="binomial", 
+                   control = glmerControl(optimizer="bobyqa"))
+    mod.0 <- glmer(formula = y ~ 1 + (1|LOC.), weights=nbirds., family="binomial", 
+                   control = glmerControl(optimizer="bobyqa"))
     }
   else{
     #for all other models
@@ -213,13 +219,18 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   
   conf.int95.D <- c(conf.int95.D, rep(NA, 4))
   conf.int95.R <- c(NA, NA, conf.int95.R, NA, NA)
-  conf.int95.0 <- rep(NA, 6) 
+  conf.int95.0 <- rep(NA, 9) 
   conf.int95.D_R <- c(conf.int95.D_R,rep(NA, 2))
   
-  conf.int95 <- rbind(conf.int95.DR,conf.int95.D, conf.int95.R, conf.int95.0, conf.int95.D_R)                
+  conf.int95.D <- append(conf.int95.D, c(par.es.D, NA, NA))
+  conf.int95.R <- append(conf.int95.R, c(NA, par.es.R,  NA))
+  conf.int95.D_R <- append(conf.int95.D_R, c(par.es.D_R, NA))
+  conf.int95.DR <- append(conf.int95.DR, par.es.DR)
+  
+  conf.int95 <- rbind(conf.int95.DR, conf.int95.D, conf.int95.R, conf.int95.0, conf.int95.D_R)                
   conf.int95 <- round(conf.int95, 2)
   conf.int95[which(conf.int95 >= 100) ] <- round(conf.int95[which(conf.int95 >= 100 )])
-  colnames(conf.int95) <- c('D_low', 'D_high', 'R_low', 'R_high', 'DR_low', 'DR_high')
+  colnames(conf.int95) <- c('D_low', 'D_high', 'R_low', 'R_high', 'DR_low', 'DR_high', 'D_est', 'R_est', 'DR_est')
   
   mod.eval <- cbind.data.frame(mod.name, mod.AIC, conf.int95)
   mod.eval <- mod.eval[with(mod.eval, order(mod.AIC$dAICc.lib)), ]
