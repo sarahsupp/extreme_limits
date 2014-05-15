@@ -41,7 +41,8 @@ tt[tt<0.2]
 Which pairs of secondary molt classes differ in weight?
 ````{r}
 site.dat$Secondary.Molt <- ordermolt(site.dat$Secondary.Molt)
-plot(site.dat$Weight ~ site.dat$Secondary.Molt, col="light grey")
+plot(site.dat$Weight ~ site.dat$Secondary.Molt, col="light grey", xlab = "Secondary Molt Class", ylab = "Weight",
+     , cex.axis = 2, cex.lab = 2, pch=19)
 table(site.dat$Secondary.Molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Secondary.Molt))[[1]][,4]), 3)
 tt[tt<.2]
@@ -50,7 +51,8 @@ tt[tt<.2]
 Which pairs of body molt classes differ in weight?
 ````{r}
 site.dat$Body.Molt <- ordermolt(site.dat$Body.Molt)
-plot(site.dat$Weight ~ site.dat$Body.Molt, col="light grey", xlab="Body Molt Class", ylab="Weight")
+plot(site.dat$Weight ~ site.dat$Body.Molt, col="light grey", xlab="Body Molt Class", ylab="Weight", pch=19, 
+     cex.lab = 2, cex.axis = 2)
 table(site.dat$Body.Molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Body.Molt))[[1]][,4]),3)
 tt[tt<.2]
@@ -59,7 +61,8 @@ tt[tt<.2]
 Which pairs of gorget/head molt classes differ in weight?
 ````{r}
 site.dat$Gorget.head.molt <- ordermolt(site.dat$Gorget.head.molt)
-plot(site.dat$Weight ~ site.dat$Gorget.head.molt, col="light grey",xlab="gorget head molt", ylab="Weight")
+plot(site.dat$Weight ~ site.dat$Gorget.head.molt, col="light grey",xlab="gorget head molt", ylab="Weight", pch=19, 
+     cex.lab = 2, cex.axis = 2)
 table(site.dat$Gorget.head.molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Gorget.head.molt))[[1]][,4]),3)
 tt[tt<.2]
@@ -68,7 +71,8 @@ tt[tt<.2]
 Which pairs of tail molt classes differ in weight?
 ````{r}
 site.dat$Tail.Molt <- ordermolt(site.dat$Tail.Molt)
-plot(site.dat$Weight ~ site.dat$Tail.Molt, col="light grey", xlab="tail molt", ylab="Weight")
+plot(site.dat$Weight ~ site.dat$Tail.Molt, col="light grey", xlab="tail molt", ylab="Weight", pch=19, 
+     cex.lab = 2, cex.axis = 2)
 table(site.dat$Tail.Molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Tail.Molt))[[1]][,4]),3)
 tt[tt<.2]
