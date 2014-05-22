@@ -30,7 +30,7 @@ Plot relationship of NDVI with precipitation
 require(ggplot2)
 
 ggplot(yearly.climate, aes(wintercumpre, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
-  ylab("average winter NDVI") + xlab("cumulative precipitation (mm)") + #geom_text(aes(label=yr)) +
+  ylab("average winter NDVI") + xlab("cumulative winter precip (mm)") + #geom_text(aes(label=yr)) +
   theme_classic() + theme(text = element_text(size=20))
 lm1 = lm(winterNDVI ~ wintercumpre, data = yearly.climate)
 print(summary(lm1)$r.sq)
