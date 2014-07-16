@@ -23,8 +23,28 @@ Load the yearly climate (and NDVI) data which will serve as predictors and merge
 load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)
-rm(yearly.climate)
 ````
+
+Plot relationship of NDVI with precipitation and with physiological demand
+```{r}
+require(ggplot2)
+
+#precipitation correlated with NDVI in winter?
+ggplot(yearly.climate, aes(wintercumpre, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
+  ylab("average winter NDVI") + xlab("cumulative winter precip (mm)") + #geom_text(aes(label=yr)) +
+  theme_classic() + theme(text = element_text(size=20))
+lm1 = lm(winterNDVI ~ wintercumpre, data = yearly.climate)
+print(summary(lm1)$r.sq)
+
+#NDVI correlated with physiological demand?
+ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
+  ylab("average winter NDVI") + xlab("percent days with Te < 10 C") + geom_text(aes(label=yr)) +
+  theme_classic() + theme(text = element_text(size=20))
+lm2 = lm(winterNDVI ~ yearly.Te.10C.q, data = yearly.climate)
+print(summary(lm2)$r.sq)
+
+srm(yearly.climate)
+```
 
 Plot arrival responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
 ```{r fig.width=7, fig.height=6, warning=FALSE}
