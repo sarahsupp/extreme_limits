@@ -4,6 +4,7 @@ Model Molt Variation
 This document describes the model of Molt observed in Arizona and how it covaries with energetic demand and resource availability in Mexican wintering grounds
 
 ```{r}
+library(ggplot2)
 #load the Hummingbird data; i.e. the d.f. site.dat
 load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
 #keep only the variables you need
@@ -12,13 +13,15 @@ site.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
 ordermolt <- function(x){ordered(x, levels=c("M","R",1:8,0,9,"F","L"))}
 site.dat$PriMary.Molt <- ordermolt(site.dat$PriMary.Molt)
 hist(as.numeric(site.dat$PriMary.Molt),col="grey80", xlim = c(0,14), breaks = seq(0.5,14.5, by=1), main = "Primary Molt")
+#plot molt stage by year for comparison
+sd <- site.dat[complete.cases(site.dat),]
+ggplot(sd, aes(PriMary.Molt)) + geom_histogram() + facet_wrap(~yearfac) + theme_bw()
 ```
 
 
 
 ```{r}
 #Calculate quantiles of molt distribution per site & year ('Molt.quant...'). quant.50 indicates the median molt stage at a given site and year
-
 
 getMOLTquant <- function(quantile.){
   tapply(site.dat$PriMary.Molt, INDEX=list(site.dat$LOC, site.dat$yearfac),
