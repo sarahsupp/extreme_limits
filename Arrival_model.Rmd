@@ -5,12 +5,11 @@ This document describes the model of Arrival/catch observed in Arizona and how i
 
 ```{r}
 #load the Hummingbird arrival data; i.e. the d.f. yearly.catch.stat
-load("/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.catch.stat.rdata")
+load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.catch.stat.rdata")
 ```
 
 ```{r}
 #Calculate quantiles of arrival distribution per site & year ('sess.quant...'). quant.50 indicates the median arrival date at a given site and year.
-
 yearly.catch.stat$sess.quant.05 <- as.Date(yearly.catch.stat$sess.quant.05, origin="2015-01-01")
 yearly.catch.stat$sess.quant.25 <- as.Date(yearly.catch.stat$sess.quant.25, origin="2015-01-01")
 yearly.catch.stat$sess.quant.50 <- as.Date(yearly.catch.stat$sess.quant.50, origin="2015-01-01")
@@ -21,11 +20,31 @@ yearly.catch.stat$sess.quant.95 <- as.Date(yearly.catch.stat$sess.quant.95, orig
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the arrival/catch metrics in the data frame 'yearly.catch.stat' to be used for modelling
 ````{r}
-load("/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.climate.rdata")
+load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)
-rm(yearly.climate)
 ````
+
+Plot relationship of NDVI with precipitation and with physiological demand
+```{r}
+require(ggplot2)
+
+#precipitation correlated with NDVI in winter?
+ggplot(yearly.climate, aes(wintercumpre, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
+  ylab("average winter NDVI") + xlab("cumulative winter precip (mm)") + #geom_text(aes(label=yr)) +
+  theme_classic() + theme(text = element_text(size=20))
+lm1 = lm(winterNDVI ~ wintercumpre, data = yearly.climate)
+print(summary(lm1)$r.sq)
+
+#NDVI correlated with physiological demand?
+ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
+  ylab("average winter NDVI") + xlab("percent days with Te < 10 C") + geom_text(aes(label=yr)) +
+  theme_classic() + theme(text = element_text(size=20))
+lm2 = lm(winterNDVI ~ yearly.Te.10C.q, data = yearly.climate)
+print(summary(lm2)$r.sq)
+
+srm(yearly.climate)
+```
 
 Plot arrival responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
 ```{r fig.width=7, fig.height=6, warning=FALSE}
@@ -37,13 +56,21 @@ xyplot(sess.quant.50 ~ winterNDVI|LOC, data=yearly.catch.stat) + layer(panel.smo
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
-source('/Users/sarah/Desktop/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/Model_evaluation_v4.r')
+source('/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ````
 
-Using aforementioned function evaluate hierarchical models of median Molt stage as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
+Using aforementioned function evaluate hierarchical models of median arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
 ````{r}
 attach(yearly.catch.stat)
 #http://www.quantpsy.org/interact/interactions.htm
-mod.evaluation(yname='sess.quant.50', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI", D="yearly.Te.10C.q", N = "n.birds")
+mod.evaluation(yname='sess.quant.50',centering='CGM',stand=T,log.D=T,R="winterNDVI") 
+detach(yearly.catch.stat)
+````
+
+Using  function evaluate hierarchical models of 25th percentile arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
+````{r}
+attach(yearly.catch.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='sess.quant.25',centering='CGM',stand=T,log.D=T,R="winterNDVI") 
 detach(yearly.catch.stat)
 ````
