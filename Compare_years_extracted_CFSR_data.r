@@ -1,5 +1,5 @@
 
-
+#code to run on summarized winter data
 #+++++++++++ functions to perform and analyze Tukey test  +++++++++++####
 plot.CFSR.Annual.var <- function(df,maxday=150,varname,maxbaseyr=2011){
   ss<-which((df$BaseYear >1999)&(df$DOYsinceBase < maxday)&(df$BaseYear <= maxbaseyr))
