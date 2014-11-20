@@ -236,7 +236,7 @@ ra.calc <- function(u){
   return(ra)
 }  
 
-Rabs.calc <- function(Sp, ApOVERA = 0.25, Sd, aS = 0.89, aL = 0.9, Li){
+Rabs.calc <- function(Sp, ApOVERA = 0.25, Sd, aS = 0.89, aL = 0.97, Li){
   #Calculate long + shortwave radiation absorbed
   #
   # Args:
@@ -246,7 +246,7 @@ Rabs.calc <- function(Sp, ApOVERA = 0.25, Sd, aS = 0.89, aL = 0.9, Li){
   #           directly absorbing shortwave radiation. 0.25 is a conservative starting estimate
   #   Sd: diffuse shortwave radiation. This is usually measured with a shadow radiometer
   #   aS: mean shortwave absorptivity. 0.89 was estimated for 2 bird species
-  #   aL: mean longwave absorptivity. Don will find value 0.9 is place holder !!!!!!
+  #   aL: mean longwave absorptivity. The published range of values for birds, based on field/lab data, is 0.95-0.99, where 0.97 is the average.
   #   Li: incoming longwave radiation
   
   Rabs.shortwave <- ((Sp*ApOVERA) + Sd) * aS
