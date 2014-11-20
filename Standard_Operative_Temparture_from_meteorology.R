@@ -275,7 +275,7 @@ Te.calc <- function(Ta, Rabs, sigma = 5.67e-8, epsilon = 0.95, rhoCp = 1200, ra)
   return(Te)
 }
 
-Tes.calc <- function(Te, Tb, u){
+Tes.calc <- function(Te, Tb=42+273, u){
   #Calculate standard operative temperature
   #
   # Args
