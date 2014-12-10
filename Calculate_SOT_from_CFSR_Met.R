@@ -183,7 +183,8 @@ detach(allmet)
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #source("C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Calculate_SOT_from_Met.R")
-source("C:/Users/sarah/Documents/GitHub/extreme_limits/Calculate_SOT_from_Met.R")
+source("C:/Users/sarah/Documents/GitHub/extreme_limits/Calculate_SOT_from_Met.R") #code from PAB computer
+source("C:/Users/sarah/Documents/GitHub/extreme_limits/Standard_Operative_Temparture_from_meteorology.R") #code PAB sent us
 attach(allmet)
 undebug(Tes.calc.compl.incl.rad) #only need to debug if you are working in "debug" mode
 undebug(SpSd.calc) #only need to debug if you are working in "debug" mode
