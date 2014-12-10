@@ -23,10 +23,19 @@ Requirements
  * `lme4`
  * `lattice`
  * `latticeExtra`
+ * `maptools`
+ * `ncdf`
+ * `RNetCDF`
+ * `raster`
+ * `sirad`
+ * `timeDate`
+ * `zoo`
 
 Data
 -----
  * `Mexico_CFSR_level2.rdata` -
+ * `Mexico_SOT_level1.rdata` - 
+ * `Mexico_SOT_level2.rdata` -
  * `Mexico_SOT_level3.rdata` -
  * `NDVI_df.rdata` - 
  * `Torpor_df.rdata` -
@@ -37,6 +46,8 @@ Data
 
 R Scripts (functions and data preparation)
 ------------
+ * `Calculate_SOT_from_Met.r` - contains standard operative temperature calculations (problem with code?)
+ * `calculate_diffuse_fraction.r` - contains diffuse fraction of radiation calculations (problem with code?)
  * `Calculate_SOT_from_CFSR_Met.r` - makes the dataframe allmet, makes Mexico_SOT_level3.rdata, uses functions from standard_operative... and diffuse_fraction, makes some plots
  * `NCEP_CFSR_data_extract_v5.r` - a function to summarize extracted data (netcdf files) per day, sum/mean/max/min
  * `compare_years_extracted_CFSR_data.r` - uses Mexico CFSR_level2.rdata and makes/modifies annual.anom.df.rdata (??)
