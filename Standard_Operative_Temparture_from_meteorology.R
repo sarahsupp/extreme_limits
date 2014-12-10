@@ -59,7 +59,8 @@ Te.calc <- function(Ta, Rabs, sigma = 5.67e-8, epsilon = 0.95, rhoCp = 1200, ra)
   # Returns:
   #  Operative temperature
   #
-  if (Ta < 263){cat("STOP !!! Ta needs to be provided in K !!!\n");
+  # check the first Ta value to see if it is provided in Kelvin. Will stop if it is not
+  if (Ta[1] < 263){cat("STOP !!! Ta needs to be provided in K !!!\n");
                 cat("provided Ta range is: ",range(Ta,na.rm=T),"\n");browser()}
   Te <- Ta + (Rabs - sigma*epsilon*(Ta^4))/(rhoCp / 4*sigma*(Ta^3) + ra)
   return(Te)
@@ -98,7 +99,7 @@ Tes.calc.compl <- function(Ta, u, Sp, Sd, Li){
   #calc longwave+shortwave radiation absorbed
   Rabs <- Rabs.calc(Sp=Sp, Sd=Sd, Li=Li) 
   Te <- Te.calc(Ta=Ta,ra=ra,Rabs=Rabs)
-  Tes <- Tes.calc(Te,u=u)
+  Tes <- Tes.calc(Te,Tb=315,u=u)
   return(Tes)
 }
 
