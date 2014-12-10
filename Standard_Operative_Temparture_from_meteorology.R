@@ -125,7 +125,7 @@ Tes.calc.compl.incl.rad <- function(Ta,
 #   Standard operative temperature
 #
   #load the function SpSd.calc
-  source("C:\\share\\pbeck\\Hummer_NASA\Code_copy\\Diffuse_fraction_of_solar_radiation.R")
+  source("C:/Users/sarah/Documents/GitHub/extreme_limits/Diffuse_fraction_of_solar_radiation.R")
   #
   SpSd <- SpSd.calc(Rsurface=Rsurface,R_extra_terr=R_extra_terr,solarzen=solarzen)
   #win.graph();par(mfrow=c(2,2))
