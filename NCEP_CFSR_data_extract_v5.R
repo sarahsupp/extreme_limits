@@ -1,3 +1,7 @@
+# code and functions for Extreme Limits manuscript (PAB, TAC, SRS)
+# Starts with Mexico_SOT_level3.rdata 
+# Makes Mexico_CFSR_level2.rdata (?)
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # a function to summarize extracted data per day, sum/mean/max/min ++++++++++++++++####
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -26,6 +30,7 @@
  colnames(CFSRdat.dat.daily)[1]<-"imdate"
  return(CFSRdat.dat.daily)
 }
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # a function to ammend a d.f. with years ndays since start day of choice +++++++++++####
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -44,6 +49,7 @@
   colnames(outdat)<-c('DOYsinceBase','BaseYear')
   return(outdat)
 }
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # a function to calculate cumulative CFSR values since a chosen date
@@ -64,6 +70,7 @@
   
   outcum <- as.data.frame(outcum);colnames(outcum)<-paste('cum',Varname,sep="")
   return(outcum)}
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # a function to calculate daily statistics of CFRS variables
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -89,6 +96,8 @@
   
   return(CFSRdat.dat.daily)
 }
+
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #read in the Mexico site data
@@ -96,10 +105,14 @@
 #source("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\read_Mex_obs.r")
 #site.vec<-site.vec[site.vec$wint.high.elev==T,]
 
+
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #Load the met data extracted during the calculation of Stand. Op. Temp
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-load("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_SOT_level3.rdata")
+
+#load("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_SOT_level3.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_SOT_level3.rdata")
 cn <- colnames(allmet)
 cn[cn=="cam_pre"] <- "pre"
 colnames(allmet) <- cn;rm(cn)

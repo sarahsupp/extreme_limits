@@ -238,6 +238,7 @@ ra.calc <- function(u){
 
 Rabs.calc <- function(Sp, ApOVERA = 0.25, Sd, aS = 0.89, aL = 0.97, Li){
   #Calculate long + shortwave radiation absorbed
+  
   #
   # Args:
   #  Sp: direct shortwave radiation (W m^(-2))
@@ -275,7 +276,7 @@ Te.calc <- function(Ta, Rabs, sigma = 5.67e-8, epsilon = 0.95, rhoCp = 1200, ra)
   return(Te)
 }
 
-Tes.calc <- function(Te, Tb=42+273, u){
+Tes.calc <- function(Te, Tb=315, u){
   #Calculate standard operative temperature
   #
   # Args
