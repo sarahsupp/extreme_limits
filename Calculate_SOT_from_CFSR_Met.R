@@ -119,12 +119,14 @@ rm(imEpoch, LATITUDE, LONGITUDE, R_extra, solarzen)
 #attach(site.vec.coords.alldates)
 #plot(solarzen[ss],R_extra[ss],pch=16,col=rgb(.5,.5,.5,.1),cex=.2)                        
 #detach(site.vec.coords.alldates)
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #check for that solarzen and R_extra make sense
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 attach(site.vec.coords.alldates)
 #plot(R_extra,solarzen,pch=16,cex=.1,col=rgb(0.1,0.1,0.1,0.1));abline(0,1)
-plot(R_extra,solarzen,pch=16,cex=.1,col=imEpoch);abline(0,1)
+plot(R_extra,solarzen,pch=16,cex=.1,col=imEpoch)
+abline(0,1)
 detach(site.vec.coords.alldates)
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -140,18 +142,19 @@ Dlwrf.dat$imEpoch <- clean.imEpoch(Dlwrf.dat$imEpoch)
 Dswrf.dat$imEpoch <- clean.imEpoch(Dswrf.dat$imEpoch)
 Pre.dat$imEpoch <- clean.imEpoch(Pre.dat$imEpoch)
 
-allmet <- merge(Tmin.dat,Wnd.dat);rm(Wnd.dat,Tmin.dat)
-allmet <- merge(allmet,Tmax.dat);rm(Tmax.dat)
-allmet <- merge(allmet,Dlwrf.dat);rm(Dlwrf.dat)
-allmet <- merge(allmet,Dswrf.dat);rm(Dswrf.dat)
-allmet <- merge(allmet,Pre.dat);rm(Pre.dat)
+allmet <- merge(Tmin.dat,Wnd.dat); rm(Wnd.dat,Tmin.dat)
+allmet <- merge(allmet,Tmax.dat); rm(Tmax.dat)
+allmet <- merge(allmet,Dlwrf.dat); rm(Dlwrf.dat)
+allmet <- merge(allmet,Dswrf.dat); rm(Dswrf.dat)
+allmet <- merge(allmet,Pre.dat); rm(Pre.dat)
 
 colnames(site.vec.coords.alldates)[c(3,4)] <- c('cellnrs','imdate')
 allmet <- merge(site.vec.coords.alldates,allmet)
 rm(site.vec.coords.alldates)
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-allmet$tmax <- allmet$tmax-273
+allmet$tmax <- allmet$tmax-273 #convert tmax to Celsius (tmin is already in Celsius)
 #setwd('C:\\Data\\WHRC\\Hummers\\R_data\\')
 setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
 save.image("Mexico_SOT_level2.rdata")
@@ -171,7 +174,6 @@ win.graph();plot(dswrf,R_extra,pch=16,cex=.1,xlim=range(c(R_extra,dswrf),na.rm=T
 win.graph();plot(dswrf,R_extra,pch=16,cex=.1,xlim=range(c(R_extra,dswrf),na.rm=T),ylim=range(c(R_extra,dswrf),na.rm=T),col=imEpoch);abline(0,1,lwd=2);abline(0,2)
 plot(dswrf,dlwrf,pch=16,cex=.1,xlim=range(c(dlwrf,dswrf),na.rm=T),ylim=range(c(dlwrf,dswrf),na.rm=T),col=imEpoch);abline(0,1,lwd=2);abline(0,2)
 
-
 #plot(solarzen,R_extra,pch=16,cex=.1,col=imEpoch)
 plot(solarzen,dswrf,pch=16,cex=.1,col=imEpoch);abline(0,1)
 detach(allmet)
@@ -180,10 +182,11 @@ detach(allmet)
 #calculate Tes
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
-source("C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Calculate_SOT_from_Met.R")
+#source("C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Calculate_SOT_from_Met.R")
+source("C:/Users/sarah/Documents/GitHub/extreme_limits/Calculate_SOT_from_Met.R")
 attach(allmet)
-undebug(Tes.calc.compl.incl.rad)
-undebug(SpSd.calc)
+undebug(Tes.calc.compl.incl.rad) #only need to debug if you are working in "debug" mode
+undebug(SpSd.calc) #only need to debug if you are working in "debug" mode
 Tes.dat <- Tes.calc.compl.incl.rad(Ta=tmax+273,u=wnd,Li=dlwrf,Rsurface=dswrf,R_extra_terr=R_extra,solarzen=solarzen)
 #back to Celsius
 Tes.dat <- Tes.dat - 273

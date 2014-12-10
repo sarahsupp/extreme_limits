@@ -116,6 +116,7 @@ load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_SOT_level3.rdat
 cn <- colnames(allmet)
 cn[cn=="cam_pre"] <- "pre"
 colnames(allmet) <- cn;rm(cn)
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #Process the rain data ####
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -152,6 +153,7 @@ Tmin.dat.d.stats <- Daily.stat.CFSR(Tmin.dat.d,Varnames=c('tmin'))
 #dat.d.stats can be used for good levelplots WRITE FUNCTION FOR IT!
 #plot(Tes.dat.d.stats$imdate,Tes.dat.d.stats$cumepochSub122_mn,col=Tes.dat.d.stats$BaseYear,pch=16,cex=.1)
 plot(Tmin.dat.d.stats$imdate,Tmin.dat.d.stats$tmin_mn,col=Tmin.dat.d.stats$BaseYear,pch=16,cex=.1)
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #Process the tmax data ####
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
