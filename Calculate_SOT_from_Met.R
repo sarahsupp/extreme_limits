@@ -122,6 +122,7 @@ Tes.calc.compl <- function(Ta, u, Sp, Sd, Li){
 
 #source("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\calculate_diffuse_fraction.R")
 source("C:\\share\\pbeck\\Hummer_NASA\Code_copy\\calculate_diffuse_fraction.R")
+source("C:/Users/sarah/Documents/GitHub/extreme_limits/calculate_diffuse_fraction.R")
 #provides the function
 #SpSd.calc(Rsurface,Rclearsky,solarzen)
   
