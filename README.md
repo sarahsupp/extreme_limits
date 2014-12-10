@@ -37,6 +37,7 @@ Data
 
 R Scripts (functions and data preparation)
 ------------
+ * `Calculate_SOT_from_CFSR_Met.r` - makes the dataframe allmet, makes Mexico_SOT_level3.rdata, uses functions from standard_operative... and diffuse_fraction, makes some plots
  * `NCEP_CFSR_data_extract_v5.r` - a function to summarize extracted data (netcdf files) per day, sum/mean/max/min
  * `compare_years_extracted_CFSR_data.r` - uses Mexico CFSR_level2.rdata and makes/modifies annual.anom.df.rdata (??)
  * `Make_yearly_enviro_dat.r` - code to make yearly.climate.rdata file from the summarized raw data (annual.anom.df.rdata), to be used in the models for the manuscript results
