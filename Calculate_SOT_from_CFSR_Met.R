@@ -1,3 +1,6 @@
+#lower-level code for working with the climate data for the Extreme Limits paper (PAB, TAC, SRS)
+
+
 #  RUN ON ARCTIC
 require(maptools)
 
@@ -8,13 +11,15 @@ require(maptools)
 #setwd('C:\\Data\\WHRC\\Hummers\\R_data\\')
 setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
 load("Mexico_CFSR_level2.rdata")
-objs <- ls();rm(list=objs[!is.element(objs,c("xtractCFSRatSITES","site.vec","list.rasters"))]);rm(objs)
+objs <- ls()
+rm(list=objs[!is.element(objs,c("xtractCFSRatSITES","site.vec","list.rasters"))])
+rm(objs)
+
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #Extract the Tmin data ####
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 CFSR.Tmin_6hr.dir <- 'C:\\forest\\data\\cfsr\\tif\\tmin_6hr_mex'
 Tmin.dat <- xtractCFSRatSITES(CFSRdir=CFSR.Tmin_6hr.dir,site.vec,start.date="2000-01-01",end.date="2015-01-03",Varname="tmin",xtrachar=4)
-
 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -76,7 +81,8 @@ load("Mexico_SOT_level1.rdata")
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #source("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\calculate_SOT_from_Met.R")
-source("C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\calculate_SOT_from_Met.R")
+#source("C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\calculate_SOT_from_Met.R")
+source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R")
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #calculate R_extra_for all sites and days-epochs
