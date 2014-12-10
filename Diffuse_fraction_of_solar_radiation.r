@@ -35,14 +35,18 @@ IdoverI.calc <- function(kt,solarzen){
   # Returns:
   #   the fraction of diffuse radiation (Id) in global radiation (I)
   #  
-  if (kt <= 0.3) {IdoverI <- 0.1020 - 0.248*kt}
-  else{
-  if(kt < 0.78){
-    solar.elev <- pi/2 - solarzen
-    IdoverI <- 1.4 - 1.749*kt + 0.177*sin(solar.elev)}
-  else{
-    IdoverI <- 0.147}
-  }
+  IdoverI = kt*NA
+
+    Under.78 <- which(kt < 0.78 & kt >0.3)
+    solar.elev <- pi/2 - solarzen[Under.78] 
+    IdoverI[Under.78] <- 1.4 - 1.749*kt[Under.78] + 0.177*sin(solar.elev)
+    
+    Under.3 <- which(kt <= 0.3)
+    IdoverI[Under.3] <- 0.1020 - 0.248*kt[Under.3]
+    
+    Over.78 <- which(kt >= 0.78)
+    IdoverI[Over.78] <- 0.147
+  
   return(IdoverI)
 }
 
