@@ -62,7 +62,8 @@ SpSd.calc <- function(Rsurface,R_extra_terr,solarzen){
   # Returns:
   #  A two-column matrix giving incoming direct [,1], and diffuse [,2] radiationd at the surface
   # 
-  if (solarzen > 2*pi){cat("STOP STOP STOP provide solarzenith in radiance to SpSd.calc\n");browser()}
+  #check the first value in solarzen to see if it makes sense and is provided in radiance
+  if (solarzen[1] > 2*pi){cat("STOP STOP STOP provide solarzenith in radiance to SpSd.calc\n");browser()}
   kt <- Rsurface/R_extra_terr
   #the formula in Lanini 2010 p1 is
   #kt <- Rsurface/(Io*cos(solarzen))
