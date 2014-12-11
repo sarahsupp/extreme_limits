@@ -33,6 +33,7 @@ Requirements
 
 Data
 -----
+ * `Mexico_CFSR_level1.rdata` -
  * `Mexico_CFSR_level2.rdata` -
  * `Mexico_SOT_level1.rdata` - 
  * `Mexico_SOT_level2.rdata` -
@@ -71,7 +72,7 @@ Markdown files
 --------------
  * `Diffuse_fraction_of_solar_radiation.md` - Example for working with the data
  * `Standard_Operative_Temparture_from_meteorology.md` - Example for working with the data
- * 
+ 
 
 Replicating the results from the raw data
 ---------------------------
