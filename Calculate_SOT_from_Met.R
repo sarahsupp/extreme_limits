@@ -37,7 +37,7 @@ ra.calc <- function(u){
   # Returns:
   #  aerodynamic resistance to convective heat transfer (s m-1)
   # 
-  ra <- 37.76*u^(-0.945)
+  ra <- 37.76*u^(-0.495)
   return(ra)
 }  
 
@@ -76,7 +76,8 @@ Te.calc <- function(Ta, Rabs, sigma = 5.67e-8, epsilon = 0.95, rhoCp = 1200, ra)
   #
   if (Ta < 263){cat("STOP !!! Ta needs to be provided in K !!!\n");
                 cat("provided Ta range is: ",range(Ta,na.rm=T),"\n");browser()}
-  Te <- Ta + (Rabs - sigma*epsilon*(Ta^4))/(rhoCp / 4*sigma*(Ta^3) + ra)
+  # Te <- Ta + (Rabs - sigma*epsilon*(Ta^4))/(rhoCp / 4*sigma*(Ta^3) + ra) #old equation - does not match Greek et al. 1989
+  Te <- Ta + (Rabs - sigma*epsilon*(Ta^4)) / (rhoCp/ra + 4*sigma*epsilon*(Ta^3))
   return(Te)
 }
 

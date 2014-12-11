@@ -73,6 +73,8 @@ SpSd.calc <- function(Rsurface,R_extra_terr,solarzen){
   IdoverI <- IdoverI.calc(kt,solarzen)
   IdoverI[IdoverI < 0] <- 0 ; IdoverI[IdoverI > 1] <- 1
   SpSd <- Rsurface * cbind(1-IdoverI,IdoverI)
+  #SpSd is NA (only?) if kt is NA. kt is NA (only?) when R_extra_terr is NA (ie at night)
+  SpSd[is.na(SpSd)]<-0
   return(SpSd)
 }
 

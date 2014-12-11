@@ -22,7 +22,7 @@ ra.calc <- function(u){
   # Returns:
   #  aerodynamic resistance to convective heat transfer (s m-1)
   # 
-  ra <- 37.76*u^(-0.945)
+  ra <- 37.76*u^(-0.495)
   return(ra)
 }  
 
@@ -36,7 +36,7 @@ Rabs.calc <- function(Sp, ApOVERA = 0.25, Sd, aS = 0.89, aL = 0.9, Li){
   #           directly absorbing shortwave radiation. 0.25 is a conservative starting estimate
   #   Sd: diffuse shortwave radiation. This is usually measured with a shadow radiometer
   #   aS: mean shortwave absorptivity. 0.89 was estimated for 2 bird species
-  #   aL: mean longwave absorptivity. Don will find value 0.9 is place holder !!!!!!
+  #   aL: mean longwave absorptivity. Should be 0.97 based on the published literature (D. Powers)
   #   Li: incoming longwave radiation
   
   Rabs.shortwave <- ((Sp*ApOVERA) + Sd) * aS
@@ -62,7 +62,8 @@ Te.calc <- function(Ta, Rabs, sigma = 5.67e-8, epsilon = 0.95, rhoCp = 1200, ra)
   # check the first Ta value to see if it is provided in Kelvin. Will stop if it is not
   if (Ta[1] < 263){cat("STOP !!! Ta needs to be provided in K !!!\n");
                 cat("provided Ta range is: ",range(Ta,na.rm=T),"\n");browser()}
-  Te <- Ta + (Rabs - sigma*epsilon*(Ta^4))/(rhoCp / 4*sigma*(Ta^3) + ra)
+  # Te <- Ta + (Rabs - sigma*epsilon*(Ta^4))/(rhoCp / 4*sigma*(Ta^3) + ra) #old equation - does not match Greek et al. 1989
+  Te <- Ta + (Rabs - sigma*epsilon*(Ta^4)) / (rhoCp/ra + 4*sigma*epsilon*(Ta^3))
   return(Te)
 }
 
@@ -131,8 +132,8 @@ Tes.calc.compl.incl.rad <- function(Ta,
   SpSd <- SpSd.calc(Rsurface=Rsurface,R_extra_terr=R_extra_terr,solarzen=solarzen)
   #win.graph();par(mfrow=c(2,2))
   #hist(Rsurface);hist(R_extra_terr);hist(SpSd[,1]);hist(SpSd[,2])
-  Tes <- Tes.calc.compl(Ta=Ta,u=u,Sp=SpSd[,1],Sd=SpSd[,2],Li=Li)
-  return(Tes)
+  Tes.compl <- Tes.calc.compl(Ta=Ta,u=u,Sp=SpSd[,1],Sd=SpSd[,2],Li=Li)
+  return(Tes.compl)
 }
 
 
