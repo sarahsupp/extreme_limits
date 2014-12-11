@@ -56,7 +56,7 @@ Te.calc <- function(Ta, #ambient T
                     ){
   if (any(Ta < 253)){cat("STOP !!! Ta needs to be provided in K !!!\n");
                 cat("provided Ta range is: ",range(Ta,na.rm=T),"\n");browser()}
-  Te <- Ta + (Rabs - sigma*epsilon*(Ta^4))/(rhoCp / (4*sigma*epsilon*(Ta^3) + ra))
+  Te <- Ta + (Rabs - sigma*epsilon*(Ta^4))/(rhoCp /ra + (4*sigma*epsilon*(Ta^3)))
   return(Te)
 }
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++####
