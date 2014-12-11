@@ -78,9 +78,9 @@ Markdown files
 Replicating the results from the raw data
 ---------------------------
 To run, check the pathnames in each of the files, make sure you have the required libraries installed, and a copy of the .Rdata files.
- 1. Convert temperature variable in the raw data (`XXXXX`) into Operative Temperature (`XXXXX.r`). This refers to the scripts `Standard_Operative_Temparture_from_meteorology.R` and `Diffuse_fraction_of_solar_radiation.R`. Save as `XXXXX.rdata`.
- 2. Input `XXXXX.rdata` into `compare_years_extracted_CFSR_data.r` to regenerate `annual.anom.df.rdata`
- 3. Input `annual.anom.df.rdata` into `Make_yearly_enviro_dat.r`. This will regenerate `yearly.climate.rdata`.
+ 1. Convert temperature variable in the raw data (`Mexico_CFSR_level1.rdata` and `Mexico_CFSR_level2.rdata`) into Operative Temperature (`Calculate_SOT_from_CFSR_Met.r`). This refers to the scripts `Calculate_SOT_from_Met_Code_Copy.R` and `calculate_diffuse_fraction_code_copy.R`. Save as allmet within `Mexico_SOT_level3.rdata`.
+ 2. Input `Mexico_CFSR_level2.rdata` into `compare_years_extracted_CFSR_data.r` to create `annual.anom.df.rdata`
+ 3. Input `annual.anom.df.rdata` into `Make_yearly_enviro_dat.r`. This will create `yearly.climate.rdata`, which is summarized from Te.
  4. Run `Arrival_model.Rmd`, `Molt_model.Rmd`, `Weight_model.Rmd`, and `plot_yearly_NDVI_cumprecip_series.r` on the main datafiles to regenerate the main figures, tables, and results for the manuscript.
 
 Contact T.A.C., S.G., or P.S.A.B. for questions related to the code that summarizes the remote sensing data.
