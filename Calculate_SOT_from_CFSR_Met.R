@@ -191,8 +191,8 @@ detach(allmet)
 source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met_Code_Copy.R") #- from "Code_Copy" folder on Arctic 
 
 attach(allmet)
-undebug(Tes.calc.compl.incl.rad) #only need to debug if you are working in "debug" mode
-undebug(SpSd.calc) #only need to debug if you are working in "debug" mode
+#undebug(Tes.calc.compl.incl.rad) #only need to debug if you are working in "debug" mode
+#undebug(SpSd.calc) #only need to debug if you are working in "debug" mode
 Tes.dat <- Tes.calc.compl.incl.rad(Ta=tmax+273,u=wnd,Li=dlwrf,Rsurface=dswrf,R_extra_terr=R_extra,solarzen=solarzen)
 #back to Celsius
 Tes.dat <- Tes.dat - 273
