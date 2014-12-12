@@ -17,6 +17,7 @@ Files
 
 Requirements
 -------------
+ * `aplpack`
  * `bbmle`
  * `ggplot2`
  * `knitr`
