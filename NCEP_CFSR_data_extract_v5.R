@@ -1,6 +1,6 @@
 # code and functions for Extreme Limits manuscript (PAB, TAC, SRS)
 # Starts with Mexico_SOT_level3.rdata 
-# Makes Mexico_CFSR_level2.rdata (?)
+# Makes Mexico_CFSR_level2.rdata (?) ##NOTE: Make this Mexico_CFSR_level2.rdata
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 # a function to summarize extracted data per day, sum/mean/max/min ++++++++++++++++####
@@ -235,4 +235,5 @@ plot(Tes.dat.d.stats$imdate,Tes.dat.d.stats$Tes_mn,col=Tes.dat.d.stats$BaseYear,
 rm(Prec.dat,Cld.dat,Tmin.dat,Wnd.dat)
 #save.image("C:\\Data\\WHRC\\Hummers\\R_data\\Mexico_CFSR_level2.rdata")
 #save a copy on Arctic for heavier analysis there
-save.image("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_CFSR_level2.rdata")
+#save.image("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_CFSR_level2.rdata")
+save.image("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_CFSR_level2.rdata")
