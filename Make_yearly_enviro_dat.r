@@ -6,6 +6,7 @@ datpath <- "/Users/sarah/Documents/github/extreme_limits/data/"
 
 load(paste(datpath, "annual.anom.df.rdata", sep=""))
 
+#a function for yearly climate data
 yearly.climdat <- function(tapply.out, nm){
   tapply.out <-as.data.frame(tapply.out)
   tapply.out <- cbind.data.frame(tapply.out, as.numeric(rownames(tapply.out)))
@@ -115,19 +116,19 @@ yearly.climate <- merge(yearly.climate, winterend.cumpre)
 #baseyear !! to conform with the capture data from Arizona !
 yearly.climate$yr <- yearly.climate$yr + 1
 
-save(yearly.climate,
-     file="C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
-save(yearly.climate,
-     file="C:\\Data\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
+#save(yearly.climate, file="C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
+#save(yearly.climate, file="C:\\Data\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
+save(yearly.climate, file="C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 
-load("C:\\Data\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
-load("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
+#load("C:\\Data\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
+#load("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata"))
 
-pairs(yearly.climate)
+pairs(yearly.climate,pch=19)
 
-attach(yearly.climate)
-win.graph()
-plot(wintercumallbelow10,winterNDVI,pch=NA)
-text(wintercumallbelow10,winterNDVI,yr)
-cor.test(wintercumallbelow10,winterNDVI)
-cor.test(wintercumallbelow10[yr!=2011],winterNDVI[yr!=2011])
+# attach(yearly.climate)
+# win.graph()
+# plot(wintercumallbelow10,winterNDVI,pch=NA)
+# text(wintercumallbelow10,winterNDVI,yr)
+# cor.test(wintercumallbelow10,winterNDVI)
+# cor.test(wintercumallbelow10[yr!=2011],winterNDVI[yr!=2011])
