@@ -70,7 +70,8 @@ Daily.anom.stats <- function(CFSR.dat.d,Varname=NULL,minbaseyr=2000,maxbaseyr=20
 
 #load("C:\\Data\\WHRC\\Hummers\\R_data\\Mexico_CFSR_level2.rdata")
 #load("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\Mexico_CFSR_level2.rdata")
-load("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_CFSR_level2.rdata")
+#load("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_CFSR_level2.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_CFSR_level2.rdata")
 
 # Cld.dat.d;Cld.data.d.stats
 # Prec.dat.d;Prec.data.d.stats
@@ -80,9 +81,8 @@ load("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_CFSR_level2.rdata")
 #lines of yearly NDVI and cumulative precip
 #+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++####
     precip.fac <- 6*60*60
-    maxDOY<-max(annual.anom.df$DOYsinceBase.y)
-    
-    rainbowcols<-rainbow(maxDOY*5/4)[1:(maxDOY+1)]
+#    maxDOY<-max(annual.anom.df$DOYsinceBase.y)   
+#    rainbowcols<-rainbow(maxDOY*5/4)[1:(maxDOY+1)]
 
 #Simple smoothed plots of annual NCEP CFSR ts +++++++++++++++++++####
 
@@ -91,15 +91,15 @@ Simple.plot(Prec.dat.d.stats,"cumpre_mn",minbaseyr=2004,maxday=250)
 #Simple.plot(Wnd.dat.d.stats,"wnd_mn",minbaseyr=2004,maxday=250)
 #Simple.plot(Cld.dat.d.stats,"cld_mn",minbaseyr=2004,maxday=250)
 Simple.plot(Tmin.dat.d.stats,"tmin_mn",minbaseyr=2004,maxday=250)
-Simple.plot(Te.dat.d.stats,"cumallbelow10_mn",minbaseyr=2004,maxbaseyr=2010,maxday=133)
+#Simple.plot(Te.dat.d.stats,"cumallbelow10_mn",minbaseyr=2004,maxbaseyr=2010,maxday=133) #this doesn't get createdin NCEP_CFSR... version that I have - do we need it?
+
 #Tukey tests of yearly means - Can you do this on ts in non-paired fashion? +++++++++++++++++++####
 Tukey.cumpre<-plot.CFSR.Annual.var(Prec.dat.d,maxday=150,varname="pre")
 Tukey.tmin<-plot.CFSR.Annual.var(Tmin.dat.d,maxday=150,varname="tmin")
-Tukey.wnd<-plot.CFSR.Annual.var(Wnd.dat.d,maxday=150,varname="wnd")
-Tukey.cld<-plot.CFSR.Annual.var(Cld.dat.d,maxday=150,varname="cld")
+#Tukey.wnd<-plot.CFSR.Annual.var(Wnd.dat.d,maxday=150,varname="wnd")
+#Tukey.cld<-plot.CFSR.Annual.var(Cld.dat.d,maxday=150,varname="cld")
 
 #anomalies: plot and summary statistics of daily NCEP CFSR  +++++++++++++++++++####
-
 Tmin.dat.d <- Daily.anom.stats(Tmin.dat.d,Varname="tmin",minbaseyr=2000,maxbaseyr=2012,maxday=134)
 Tukey.tesanom<-plot.CFSR.Annual.var(Tes.dat.d,maxday=134,varname="Tes_anom");abline(h=0)
 
@@ -111,6 +111,7 @@ Tukey.cumpreanom <- plot.CFSR.Annual.var(Prec.dat.d,maxday=150,varname="cumpre_a
 
 #Te.dat.d <- Te.dat.d[,colnames(Te.dat.d)!="allbelow10"]
 Te.dat.d <- Daily.anom.stats(Te.dat.d,Varname="Te",minbaseyr=2000,maxbaseyr=2012,maxday=134)
+Tukey.cumpreanom <- plot.CFSR.Annual.var(Te.dat.d,maxday=150,varname="Te_anom");abline(h=0)
 
 #Very 0-inflated distribution  - do cumulative?
 #Wnd.dat.d <-  Daily.anom.stats(Wnd.dat.d,Varname="wnd",minbaseyr=2000,maxbaseyr=2012,maxday=250)
@@ -127,9 +128,13 @@ annual.anom.df <- join(annual.anom.df,Te.dat.d)
 #annual.anom.df <- join(annual.anom.df,Wnd.dat.d)
 #make them daily (ie take averages across points on the same day)
 annual.anom.df <- aggregate(annual.anom.df, by=list(annual.anom.df$imdate),FUN=mean)
+
+
 #+++++++++++++++++++ load the NDVI d.f.+++++++++++++++++++####
 
-load(file="A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\NDVI_df.rdata")
+#load(file="A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\NDVI_df.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/NDVI_df.rdata")
+
 #NDVI.dat
 NDVI.dat<-NDVI.dat[!duplicated(NDVI.dat),]
 colnames(NDVI.dat)
@@ -143,7 +148,7 @@ aqf <- function(x,splinemod=spl) {
 win.graph()
 plot(NDVI.dat$allDate,NDVI.dat$allNDVI,pch=16,col=rgb(.5,.5,.5,.2),cex=.2,ylab="MODIS (Terra & Aqua) NDVI",
      xlab="",main="Vegetation productivity on Broad-tailed Hummingbird wintering grounds",
-     ylim=c(.4,.9),xlim=as.Date(c())
+     ylim=c(.4,.9))#,xlim=as.Date(c())
 spl <- smooth.spline(NDVI.dat$allDate,NDVI.dat$allNDVI,df=80)
 prednrs <- c(min(spl$x):max(spl$x))
 lines(as.Date(prednrs,origin="1970-01-01"),aqf(x=prednrs,splinemod=spl),col="dark green",lwd=2.5)
@@ -166,10 +171,12 @@ annual.anom.df.backup <- annual.anom.df
 #annual.anom.df<-annual.anom.df.backup
 
 annual.anom.df<- merge(x=annual.anom.df,y=smoothNDVIdf,FUN=mean,by.x="Group.1",by.y="imdate")
+
 #keep only the points in the focal years
 annual.anom.df <- annual.anom.df[(annual.anom.df$BaseYear.x <= 2011)&(annual.anom.df$BaseYear.x >= 2000),]  #CHECK THE ONE-FIFTY NR
 
-save(annual.anom.df,file="A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\annual.anom.df.rdata")
+#save(annual.anom.df,file="A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\annual.anom.df.rdata")
+save(annual.anom.df, file="C:/Users/sarah/Documents/GitHub/extreme_limits/data/annual.anom.df.rdata")
 
 
 
@@ -256,18 +263,18 @@ win.graph()
 BivariateWinterComp(df=annual.anom.df,xvar="smoothNDVI_anom",yvar="Te_anom",maxDOY=134,focalBaseYr=2010,
                     Focalpoints=T,PointsLegend=T,focalBag=F,
                     xlabb="NDVI anomaly",ylabb="Te anomaly (C)")
-win.graph()
-BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="cld_anom",maxDOY=134,focalBaseYr=2010,
-                    Focalpoints=T,PointsLegend=T,focalBag=F,
-                    xlabb="Tmin anomaly (C)",ylabb="Cloudiness anomaly (%)",
-                    xarrow=c("colder","warmer")
-                    ,yarrow=c("cloudier","clearer"))
-win.graph()
-BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="wnd_anom",maxDOY=134,focalBaseYr=2006,
-                    Focalpoints=T,PointsLegend=T,focalBag=F,
-                    xlabb="Tmin anomaly (C)",ylabb="Wind speed anomaly",legpos="topright",
-                    xarrow=c("colder","warmer")
-                    ,yarrow=c("more still","windier"))
+# win.graph()
+# BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="cld_anom",maxDOY=134,focalBaseYr=2010,
+#                     Focalpoints=T,PointsLegend=T,focalBag=F,
+#                     xlabb="Tmin anomaly (C)",ylabb="Cloudiness anomaly (%)",
+#                     xarrow=c("colder","warmer")
+#                     ,yarrow=c("cloudier","clearer"))
+# win.graph()
+# BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="wnd_anom",maxDOY=134,focalBaseYr=2006,
+#                     Focalpoints=T,PointsLegend=T,focalBag=F,
+#                     xlabb="Tmin anomaly (C)",ylabb="Wind speed anomaly",legpos="topright",
+#                     xarrow=c("colder","warmer")
+#                     ,yarrow=c("more still","windier"))
 
 
 
@@ -278,26 +285,26 @@ BivariateWinterComp(df=annual.anom.df,xvar="smoothNDVI_anom",yvar="cumpre_anom",
                     xlabb="NDVI anomaly",ylabb="Cumulative precipitation anomaly (mm)"
                     ,xarrow=c("less productive","more productive")
                     ,yarrow=c("dryer","wetter"))
-win.graph()
-BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="cld_anom",maxDOY=134,focalBaseYr=2009,
-                    Focalpoints=T,PointsLegend=T,focalBag=F,
-                    xlabb="Tmin anomaly (C)",ylabb="Cloudiness anomaly (%)",
-                    xarrow=c("colder","warmer")
-                    ,yarrow=c("cloudier","clearer"))
+# win.graph()
+# BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="cld_anom",maxDOY=134,focalBaseYr=2009,
+#                     Focalpoints=T,PointsLegend=T,focalBag=F,
+#                     xlabb="Tmin anomaly (C)",ylabb="Cloudiness anomaly (%)",
+#                     xarrow=c("colder","warmer")
+#                     ,yarrow=c("cloudier","clearer"))
 
-win.graph()
-BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="cld_anom",maxDOY=134,focalBaseYr=2005,
-                    Focalpoints=T,PointsLegend=T,focalBag=F,
-                    xlabb="Tmin anomaly (C)",ylabb="Cloudiness anomaly (%)",
-                    xarrow=c("colder","warmer")
-                    ,yarrow=c("dryer","wetter"))
-
-win.graph()
-BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="cld_anom",maxDOY=134,focalBaseYr=2005,
-                    Focalpoints=T,PointsLegend=T,focalBag=F,
-                    xlabb="Tmin anomaly (C)",ylabb="Cloudiness anomaly (%)",
-                    xarrow=c("colder","warmer")
-                    ,yarrow=c("cloudier","clearer"))
+# win.graph()
+# BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="cld_anom",maxDOY=134,focalBaseYr=2005,
+#                     Focalpoints=T,PointsLegend=T,focalBag=F,
+#                     xlabb="Tmin anomaly (C)",ylabb="Cloudiness anomaly (%)",
+#                     xarrow=c("colder","warmer")
+#                     ,yarrow=c("dryer","wetter"))
+# 
+# win.graph()
+# BivariateWinterComp(df=annual.anom.df,xvar="tmin_anom",yvar="cld_anom",maxDOY=134,focalBaseYr=2005,
+#                     Focalpoints=T,PointsLegend=T,focalBag=F,
+#                     xlabb="Tmin anomaly (C)",ylabb="Cloudiness anomaly (%)",
+#                     xarrow=c("colder","warmer")
+#                     ,yarrow=c("cloudier","clearer"))
 
 
 
