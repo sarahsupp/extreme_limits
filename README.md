@@ -34,13 +34,13 @@ Requirements
 
 Data
 -----
- * `Mexico_CFSR_level1.rdata` -
- * `Mexico_CFSR_level2.rdata` - 
- * `Mexico_SOT_level1.rdata` - 
- * `Mexico_SOT_level2.rdata` -
- * `Mexico_SOT_level3.rdata` -
- * `NDVI_df.rdata` - 
- * `Torpor_df.rdata` -
+ * `Mexico_CFSR_level1.rdata` - stored in shared Dropbox
+ * `Mexico_CFSR_level2.rdata` - stored in shared Dropbox 
+ * `Mexico_SOT_level1.rdata` - stored in shared Dropbox 
+ * `Mexico_SOT_level2.rdata` - stored in shared Dropbox
+ * `Mexico_SOT_level3.rdata` - stored in shared Dropbox
+ * `NDVI_df.rdata` - stored in shared Dropbox 
+ * `Torpor_df.rdata` - stored in shared Dropbox
  * `annual.anom.df.rdata` - Winter range (Nov-Mar) climate data from the hummingbird site points
  * `site.dat.rdata` - Summarized site data
  * `yearly.catch.stat.rdata` - Summarized hummingbird catch data from Arizona, arrival dates as quantiles
