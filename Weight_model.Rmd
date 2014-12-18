@@ -5,7 +5,7 @@ This document describes the model of Weight observed in Arizona and how it covar
 
 ```{r}
 #load the Hummingbird data; i.e. the d.f. site.dat
-load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
 ```
 
 How does weight vary with fat?
@@ -85,7 +85,7 @@ site.dat <- site.dat[,c("LOC", "Weight", "Fat", "yearfac", "mofac")]
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the weight metrics in the data frame 'yearly.weight.stat' to be used for modelling
 ````{r}
-load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.climate.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.weight.stat <- merge(x=site.dat, y=yearly.climate, by.x='yearfac', by.y='yr')
 rm(site.dat, yearly.climate)

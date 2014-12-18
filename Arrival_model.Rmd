@@ -5,7 +5,7 @@ This document describes the model of Arrival/catch observed in Arizona and how i
 
 ```{r}
 #load the Hummingbird arrival data; i.e. the d.f. yearly.catch.stat
-load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.catch.stat.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.catch.stat.rdata")
 ```
 
 ```{r}
@@ -20,7 +20,7 @@ yearly.catch.stat$sess.quant.95 <- as.Date(yearly.catch.stat$sess.quant.95, orig
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the arrival/catch metrics in the data frame 'yearly.catch.stat' to be used for modelling
 ````{r}
-load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.climate.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)
 ````
@@ -43,7 +43,7 @@ ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + stat_s
 lm2 = lm(winterNDVI ~ yearly.Te.10C.q, data = yearly.climate)
 print(summary(lm2)$r.sq)
 
-srm(yearly.climate)
+rm(yearly.climate)
 ```
 
 Plot arrival responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
