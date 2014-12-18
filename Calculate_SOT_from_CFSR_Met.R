@@ -84,7 +84,7 @@ load("data/Mexico_SOT_level1.rdata")
 #source("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\calculate_SOT_from_Met.R")
 #source("C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\calculate_SOT_from_Met.R")
 #source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") - from Pieter's hard drive
-source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met_Code_Copy.R") #- from "Code_Copy" folder on Arctic 
+source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") #- from "Code_Copy" folder on Arctic 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #calculate R_extra_for all sites and days-epochs
@@ -188,7 +188,7 @@ detach(allmet)
 #source("C:/Users/sarah/Documents/GitHub/extreme_limits/Calculate_SOT_from_Met.R") #code from PAB computer
 #source("C:/Users/sarah/Documents/GitHub/extreme_limits/Standard_Operative_Temparture_from_meteorology.R") #code PAB sent us
 #source("C:/Users/sarah/Documents/GitHub/extreme_limits/Standard_Operative_Temparture_from_meteorology.R") #code PAB sent us
-source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met_Code_Copy.R") #- from "Code_Copy" folder on Arctic 
+source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") #- from "Code_Copy" folder on Arctic 
 
 attach(allmet)
 #undebug(Tes.calc.compl.incl.rad) #only need to debug if you are working in "debug" mode
