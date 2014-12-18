@@ -6,7 +6,7 @@ This document describes the model of Molt observed in Arizona and how it covarie
 ```{r}
 library(ggplot2)
 #load the Hummingbird data; i.e. the d.f. site.dat
-load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/site.dat.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
 #keep only the variables you need
 site.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
 #make an ordered categorical variable describing primary molt
@@ -53,7 +53,7 @@ rm(n.birds, LOC, yr)
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the molt metrics in the data frame 'yearly.molt.stat' to be used for modelling
 ````{r}
-load("C:/Users/sarah/Dropbox/ActiveResearchProjects/Hummingbird_extreme_limits/yearly.climate.rdata")
+load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.molt.stat <- merge(x=MOLT.quants,y=yearly.climate,by='yr')
 rm(MOLT.quants,yearly.climate)
