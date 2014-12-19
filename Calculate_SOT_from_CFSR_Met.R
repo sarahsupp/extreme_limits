@@ -10,8 +10,8 @@ require(maptools)
 #setwd('C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\R_data')
 #setwd('C:\\Data\\WHRC\\Hummers\\R_data\\')
 #setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
-setwd("C:\\Users/sarah/Documents/GitHub/extreme_limits/")
-load("data/Mexico_CFSR_level2.rdata")
+setwd("/Users/sarah/Desktop/Dropbox/Hummingbirds/hb_extremelimits/")
+load("DATA-USED-IN-EXTREME-LIMITS/Mexico_CFSR_level2.rdata")
 objs <- ls()
 rm(list=objs[!is.element(objs,c("xtractCFSRatSITES","site.vec","list.rasters"))])
 rm(objs)
@@ -75,7 +75,7 @@ setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
 save.image("Mexico_SOT_level1.rdata")
 
 setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
-load("data/Mexico_SOT_level1.rdata")
+load("DATA-USED-IN-EXTREME-LIMITS/Mexico_SOT_level1.rdata")
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #load the functions to caclulate SOT
@@ -84,7 +84,7 @@ load("data/Mexico_SOT_level1.rdata")
 #source("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\calculate_SOT_from_Met.R")
 #source("C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\calculate_SOT_from_Met.R")
 #source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") - from Pieter's hard drive
-source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") #- from "Code_Copy" folder on Arctic 
+source("/Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") #- from "Code_Copy" folder on Arctic 
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #calculate R_extra_for all sites and days-epochs
