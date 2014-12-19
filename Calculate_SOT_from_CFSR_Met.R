@@ -74,7 +74,8 @@ site.vec.coords <- site.vec.coords[-which(duplicated(site.vec.coords$site.cellnr
 setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
 save.image("Mexico_SOT_level1.rdata")
 
-setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
+#setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
+setwd("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/")
 load("DATA-USED-IN-EXTREME-LIMITS/Mexico_SOT_level1.rdata")
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -84,8 +85,8 @@ load("DATA-USED-IN-EXTREME-LIMITS/Mexico_SOT_level1.rdata")
 #source("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\calculate_SOT_from_Met.R")
 #source("C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\calculate_SOT_from_Met.R")
 #source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") - from Pieter's hard drive
-source("/Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") #- from "Code_Copy" folder on Arctic 
-
+#source("/Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") #- from "Code_Copy" folder on Arctic 
+source("C:/Share/tcormier/scripts/git_repos/hb_extreme_limits/calculate_SOT_from_Met.R")
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #calculate R_extra_for all sites and days-epochs
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -158,11 +159,14 @@ rm(site.vec.coords.alldates)
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 allmet$tmax <- allmet$tmax-273 #convert tmax to Celsius (tmin is already in Celsius)
 #setwd('C:\\Data\\WHRC\\Hummers\\R_data\\')
-setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
+#setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
+setwd("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/")
 save.image("Mexico_SOT_level2.rdata")
 
-setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
-load("data/Mexico_SOT_level2.rdata")
+#setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
+setwd("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/")
+#load("data/Mexico_SOT_level2.rdata")
+load("Mexico_SOT_level2.rdata")
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #check for that dswrf < R_extra in all cases
@@ -188,7 +192,8 @@ detach(allmet)
 #source("C:/Users/sarah/Documents/GitHub/extreme_limits/Calculate_SOT_from_Met.R") #code from PAB computer
 #source("C:/Users/sarah/Documents/GitHub/extreme_limits/Standard_Operative_Temparture_from_meteorology.R") #code PAB sent us
 #source("C:/Users/sarah/Documents/GitHub/extreme_limits/Standard_Operative_Temparture_from_meteorology.R") #code PAB sent us
-source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") #- from "Code_Copy" folder on Arctic 
+#source("C:\\Users/sarah/Documents/GitHub/extreme_limits/calculate_SOT_from_Met.R") #- from "Code_Copy" folder on Arctic 
+source("C:/Share/tcormier/scripts/git_repos/hb_extreme_limits/Calculate_SOT_from_Met.R")
 
 attach(allmet)
 #undebug(Tes.calc.compl.incl.rad) #only need to debug if you are working in "debug" mode
@@ -201,7 +206,8 @@ allmet<-cbind.data.frame(allmet,Tes.dat)
 rm(Tes.dat)
 
 #setwd('C:\\Data\\WHRC\\Hummers\\R_data\\')
-setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
+#setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
+setwd("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/")
 save.image("Mexico_SOT_level3.rdata")
 
 
@@ -213,7 +219,7 @@ save.image("Mexico_SOT_level3.rdata")
 #+++++++++++++++++++++++ !!!!!!!!!!! CONTINUE HERE !!!!!!!!!!! ++++++++++                          
 #+++++++++++++++++++++++ !!!!!!!!!!! CONTINUE HERE !!!!!!!!!!! ++++++++++
 #+++++++++++++++++++++++ !!!!!!!!!!! CONTINUE HERE !!!!!!!!!!! ++++++++++
-setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
+#setwd('C:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\')
 load("Mexico_SOT_level3.rdata")
 
 attach(allmet)

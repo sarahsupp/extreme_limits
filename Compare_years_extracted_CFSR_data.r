@@ -71,7 +71,8 @@ Daily.anom.stats <- function(CFSR.dat.d,Varname=NULL,minbaseyr=2000,maxbaseyr=20
 #load("C:\\Data\\WHRC\\Hummers\\R_data\\Mexico_CFSR_level2.rdata")
 #load("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\Mexico_CFSR_level2.rdata")
 #load("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_CFSR_level2.rdata")
-load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_CFSR_level2.rdata")
+#load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_CFSR_level2.rdata")
+load("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/Mexico_CFSR_level2.rdata")
 
 # Cld.dat.d;Cld.data.d.stats
 # Prec.dat.d;Prec.data.d.stats
@@ -133,7 +134,8 @@ annual.anom.df <- aggregate(annual.anom.df, by=list(annual.anom.df$imdate),FUN=m
 #+++++++++++++++++++ load the NDVI d.f.+++++++++++++++++++####
 
 #load(file="A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\NDVI_df.rdata")
-load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/NDVI_df.rdata")
+#load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/NDVI_df.rdata")
+load("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/NDVI_df.rdata")
 
 #NDVI.dat
 NDVI.dat<-NDVI.dat[!duplicated(NDVI.dat),]
@@ -176,8 +178,8 @@ annual.anom.df<- merge(x=annual.anom.df,y=smoothNDVIdf,FUN=mean,by.x="Group.1",b
 annual.anom.df <- annual.anom.df[(annual.anom.df$BaseYear.x <= 2011)&(annual.anom.df$BaseYear.x >= 2000),]  #CHECK THE ONE-FIFTY NR
 
 #save(annual.anom.df,file="A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\annual.anom.df.rdata")
-save(annual.anom.df, file="C:/Users/sarah/Documents/GitHub/extreme_limits/data/annual.anom.df.rdata")
-
+#save(annual.anom.df, file="C:/Users/sarah/Documents/GitHub/extreme_limits/data/annual.anom.df.rdata")
+save(annual.anom.df, file="C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/annual.anom.df.rdata")
 
 
 # Simple smoothed plots of annual NDVI ts+++++++++++++++++++####

@@ -2,8 +2,8 @@
 # to be used in the models for the extreme limits manuscript results
 # Code originally written by Pieter Beck, revised by Sarah R. Supp
 
-datpath <- "/Users/sarah/Documents/github/extreme_limits/data/"
-
+#datpath <- "/Users/sarah/Documents/github/extreme_limits/data/"
+datpath <- "C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/"
 load(paste(datpath, "annual.anom.df.rdata", sep=""))
 
 #a function for yearly climate data
@@ -118,11 +118,13 @@ yearly.climate$yr <- yearly.climate$yr + 1
 
 #save(yearly.climate, file="C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
 #save(yearly.climate, file="C:\\Data\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
-save(yearly.climate, file="C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+#save(yearly.climate, file="C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+save(yearly.climate, file="C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/yearly.climate.rdata")
 
 #load("C:\\Data\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
 #load("C:\\Users\\pbeck.WHRC\\Dropbox\\Hummers\\Hummer_code\\P4_Extreme_events_Broad_tailed\\Results\\yearly.climate.rdata")
-load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata"))
+#load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata"))
+load("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/yearly.climate.rdata")
 
 pairs(yearly.climate,pch=19)
 

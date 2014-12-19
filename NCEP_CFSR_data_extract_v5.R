@@ -112,7 +112,8 @@
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 #load("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_SOT_level3.rdata")
-load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_SOT_level3.rdata")
+#load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_SOT_level3.rdata")
+load("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/Mexico_SOT_level3.rdata")
 cn <- colnames(allmet)
 cn[cn=="cam_pre"] <- "pre"
 colnames(allmet) <- cn;rm(cn)
@@ -236,4 +237,5 @@ rm(Prec.dat,Cld.dat,Tmin.dat,Wnd.dat)
 #save.image("C:\\Data\\WHRC\\Hummers\\R_data\\Mexico_CFSR_level2.rdata")
 #save a copy on Arctic for heavier analysis there
 #save.image("A:\\Share\\pbeck\\Hummer_NASA\\Code_copy\\Mexico_CFSR_level2.rdata")
-save.image("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_CFSR_level2.rdata")
+#save.image("C:/Users/sarah/Documents/GitHub/extreme_limits/data/Mexico_CFSR_level2.rdata")
+save.image("C:/Users/tcormier/Dropbox (WHRC)/hb_extremelimits/DATA-USED-IN-EXTREME-LIMITS/TC_recreate/Mexico_CFSR_level2.rdata")
