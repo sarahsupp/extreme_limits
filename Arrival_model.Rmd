@@ -10,13 +10,20 @@ load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.catch.stat.rdat
 
 ```{r}
 #Calculate quantiles of arrival distribution per site & year ('sess.quant...'). quant.50 indicates the median arrival date at a given site and year.
+#note that in the sess.quant variables the year is irrelevant
 yearly.catch.stat$sess.quant.05 <- as.Date(yearly.catch.stat$sess.quant.05, origin="2015-01-01")
 yearly.catch.stat$sess.quant.25 <- as.Date(yearly.catch.stat$sess.quant.25, origin="2015-01-01")
 yearly.catch.stat$sess.quant.50 <- as.Date(yearly.catch.stat$sess.quant.50, origin="2015-01-01")
 yearly.catch.stat$sess.quant.75 <- as.Date(yearly.catch.stat$sess.quant.75, origin="2015-01-01")
 yearly.catch.stat$sess.quant.95 <- as.Date(yearly.catch.stat$sess.quant.95, origin="2015-01-01")
-#note that in the sess.quant variables the year is irrelevant
-````
+
+ggplot(yearly.catch.stat, aes(yr, sess.quant.50)) + geom_point(aes(size=n.birds)) + theme_bw() + 
+  stat_smooth() + scale_x_continuous(breaks=c(2001:2012))
+
+range(yearly.catch.stat$sess.quant.50)
+mean(yearly.catch.stat$sess.quant.50)
+mean(yearly.catch.stat[yearly.catch.stat$yr==2006,]$sess.quant.50)
+mean(yearly.catch.stat[yearly.catch.stat$yr==2010,]$sess.quant.50)
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the arrival/catch metrics in the data frame 'yearly.catch.stat' to be used for modelling
 ````{r}
