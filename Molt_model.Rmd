@@ -63,6 +63,13 @@ moltscores[11] / sum(moltscores)
 moltscores[12] / sum(moltscores)
 moltscores[13] / sum(moltscores)
 
+# take a weighted average of the discrete classes for the mean molt score
+num = sum(moltscores)
+p = apply(moltscores, 1, function(x) {x/num} )
+index = c(1:length(moltscores))
+
+meanmolt = moltscores[round(sum(index * p))]
+
 ```
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the molt metrics in the data frame 'yearly.molt.stat' to be used for modelling
