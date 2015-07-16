@@ -6,7 +6,7 @@ This document describes the model of Molt observed in Arizona and how it covarie
 ```{r}
 library(ggplot2)
 #load the Hummingbird data; i.e. the d.f. site.dat
-load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
+load("/Users/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
 #keep only the variables you need
 site.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
 #make an ordered categorical variable describing primary molt
@@ -74,7 +74,7 @@ meanmolt = moltscores[round(sum(index * p))]
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the molt metrics in the data frame 'yearly.molt.stat' to be used for modelling
 ````{r}
-load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+load("/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.molt.stat <- merge(x=MOLT.quants,y=yearly.climate,by='yr')
 rm(MOLT.quants,yearly.climate)
@@ -87,11 +87,15 @@ require(latticeExtra)
 xyplot(MOLT.quant.50 ~ yearly.Te.10C.q|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
 xyplot(MOLT.quant.50 ~ winterNDVI|LOC, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
 
+#overall response
+xyplot(MOLT.quant.50 ~ yearly.Te.10C.q, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
+xyplot(MOLT.quant.50 ~ winterNDVI, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
+
 ```
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
-source('C:/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
+source('/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ````
 
 Using  function evaluate hierarchical models of median Molt stage (50th Percentile of Molt) as a 

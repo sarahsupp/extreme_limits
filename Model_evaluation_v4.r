@@ -4,9 +4,60 @@
 # import packages
 require(lme4)
 require(bbmle)
+require(ggplot2)
 
 # source data and r files
-source('C:/Users/sarah/Documents/GitHub/extreme_limits/Plot_conditional_effects_interaction_models.r')
+source('/Users/sarah/Documents/GitHub/extreme_limits/Plot_conditional_effects_interaction_models.r')
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+#   #convert an ordered categorical variable to a simulated count table ####
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+ordered.var.2.sim.count.table<-function(x){
+  #This code drops unused factor levels at the start and end of the rank
+  #that way you are guaranteed that the count table runs from c(0 max), to c(max 0)
+  #which I'd think is desirable if the data are to be considered binomial
+  x.num <- as.numeric(x)
+  x.num.crop <- x.num-min(x.num, na.rm=T)  
+  x.num.crop.tab <- cbind(x.num.crop, max(x.num.crop, na.rm=T) - x.num.crop)
+  
+  return(x.num.crop.tab)
+}
+
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# Multiple plot function (http://www.cookbook-r.com/Graphs/Multiple_graphs_on_one_page_(ggplot2)/)
+#++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+# - cols:   Number of columns in layout
+# - layout: A matrix specifying the layout. If present, 'cols' is ignored.
+# If the layout is something like matrix(c(1,2,3,3), nrow=2, byrow=TRUE),
+# then plot 1 will go in the upper left, 2 will go in the upper right, and
+# 3 will go all the way across the bottom.
+multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
+  library(grid)
+  # Make a list from the ... arguments and plotlist
+  plots <- c(list(...), plotlist)
+  numPlots = length(plots)
+  # If layout is NULL, then use 'cols' to determine layout
+  if (is.null(layout)) {
+    # Make the panel
+    # ncol: Number of columns of plots
+    # nrow: Number of rows needed, calculated from # of cols
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                     ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+  if (numPlots==1) {
+    print(plots[[1]])
+  } else {
+    # Set up the page
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+    # Make each plot, in the correct location
+    for (i in 1:numPlots) {
+      # Get the i,j matrix positions of the regions that contain this subplot
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))    
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+  }}}
 
 
 mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.birds",
@@ -122,16 +173,16 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   }
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # plot the predictor variables
+  # plot the standardized predictor variables
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  win.graph(w=9, h=4)
-  par(mfrow=c(1,3))
-  hist(unique(D), col="light grey", ylim = c(0,5))
-  hist(unique(R),col="light grey", ylim = c(0,5))
-  plot(R,D,pch=16)
+  #win.graph(w=9, h=4) #commented out because win.graph only works on Windows OS
+  histD = ggplot(data.frame(unique(D)), aes(unique.D.)) + geom_histogram(binwidth=1) + theme_bw() + xlab("Demand")
+  histR = ggplot(data.frame(unique(R)), aes(unique.R.)) + geom_histogram(binwidth=1) + theme_bw() + xlab("Resource")
+  RxD = ggplot(data.frame(R=R, D=D), aes(R, D)) + geom_point(size=3) + theme_bw() + xlab("Resource") + ylab("Demand")
+  multiplot(histD, histR, RxD, cols=3)
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # calibrate the main model and it's sub-models
+  # calibrate the main model and it's sub-model
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++  
   if ((ordered.fac.treatment[1] == c("as.binomial")) & (!is.null(dim(y)))){
     #for models with ordinal response variables treated as binomial counts  
@@ -159,8 +210,8 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #in the D*R model, under what conditions are the D (R) terms negative?
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   cat("Conditional effects of predictors in full model, i.e. including R*D interaction\n")
-  win.graph(w=8,h=8)
-  par(mfcol=c(2,2))
+  #win.graph(w=8,h=8) #FIXME: REDO in ggplot so it can be plotted in mac and linux
+  #par(mfcol=c(2,2))
   
   r1 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, plott=F)
   r2 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, switch.vars = T, plott=F)
@@ -201,6 +252,13 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   conf.int95.D <-  sqrt(diag(vcov(mod.D)))[-1]
   conf.int95.R <-  sqrt(diag(vcov(mod.R)))[-1]
   conf.int95.D_R <-  sqrt(diag(vcov(mod.D_R)))[-1]
+  
+  print("")
+  print("Standard Error for estimates")
+  print(paste("D, R, DR:", conf.int95.DR))
+  print(paste("D, R:", conf.int95.D_R))
+  print(paste("D:", conf.int95.D))
+  print(paste("R:", conf.int95.R))
   
   #get the parameter estimates
   par.es.DR <- fixef(mod.DR)[-1]
@@ -264,19 +322,4 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   
   cat("\nModel evaluation completed and tabulated:\n")
   return(mod.eval)
-}
-
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-#   #convert an ordered categorical variable to a simulated count table ####
-#++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
-ordered.var.2.sim.count.table<-function(x){
-  #This code drops unused factor levels at the start and end of the rank
-  #that way you are guaranteed that the count table runs from c(0 max), to c(max 0)
-  #which I'd think is desirable if the data are to be considered binomial
-  x.num <- as.numeric(x)
-  x.num.crop <- x.num-min(x.num, na.rm=T)  
-  x.num.crop.tab <- cbind(x.num.crop, max(x.num.crop, na.rm=T) - x.num.crop)
-  
-  return(x.num.crop.tab)
 }

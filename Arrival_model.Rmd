@@ -5,12 +5,14 @@ This document describes the model of Arrival/catch observed in Arizona and how i
 
 ```{r}
 #load the Hummingbird arrival data; i.e. the d.f. yearly.catch.stat
-load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.catch.stat.rdata")
+load("/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.catch.stat.rdata")
 ```
 
 ```{r}
 #Calculate quantiles of arrival distribution per site & year ('sess.quant...'). quant.50 indicates the median arrival date at a given site and year.
 #note that in the sess.quant variables the year is irrelevant
+require(ggplot2)
+
 yearly.catch.stat$sess.quant.05 <- as.Date(yearly.catch.stat$sess.quant.05, origin="2015-01-01")
 yearly.catch.stat$sess.quant.25 <- as.Date(yearly.catch.stat$sess.quant.25, origin="2015-01-01")
 yearly.catch.stat$sess.quant.50 <- as.Date(yearly.catch.stat$sess.quant.50, origin="2015-01-01")
@@ -27,7 +29,7 @@ mean(yearly.catch.stat[yearly.catch.stat$yr==2010,]$sess.quant.50)
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the arrival/catch metrics in the data frame 'yearly.catch.stat' to be used for modelling
 ````{r}
-load("C:/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+load("/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)
 ````
@@ -59,6 +61,11 @@ require(lattice)
 require(latticeExtra)
 xyplot(sess.quant.50 ~ yearly.Te.10C.q|LOC, data=yearly.catch.stat) + layer(panel.smoother(x, y, method = "lm"))
 xyplot(sess.quant.50 ~ winterNDVI|LOC, data=yearly.catch.stat) + layer(panel.smoother(x, y, method = "lm"))
+
+xyplot(sess.quant.50 ~ yearly.Te.10C.q, data=yearly.catch.stat) + layer(panel.smoother(x, y, method = "lm"))
+xyplot(sess.quant.50 ~ winterNDVI, data=yearly.catch.stat) + layer(panel.smoother(x, y, method = "lm"))
+
+
 ```
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
