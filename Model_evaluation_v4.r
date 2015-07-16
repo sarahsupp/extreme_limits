@@ -5,9 +5,11 @@
 require(lme4)
 require(bbmle)
 require(ggplot2)
+require(MuMIn)
 
 # source data and r files
-source('/Users/sarah/Documents/GitHub/extreme_limits/Plot_conditional_effects_interaction_models.r')
+source('/home/sarah/Documents/GitHub/extreme_limits/Plot_conditional_effects_interaction_models.r')
+source('/home/sarah/Documents/GitHub/extreme_limits/rsquaredglmm.R') #Lefcheck, based on Nakagawa & Schielzeth 2013 MEE
 
 #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 #   #convert an ordered categorical variable to a simulated count table ####
@@ -59,6 +61,10 @@ multiplot <- function(..., plotlist=NULL, file, cols=1, layout=NULL) {
                                       layout.pos.col = matchidx$col))
   }}}
 
+
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+##                   MAIN MODEL
+#+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.birds",
                            ordered.fac.treatment = c("as.num", "as.binomial"),
@@ -293,7 +299,6 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   mod.eval <- cbind.data.frame(mod.name, mod.AIC, conf.int95)
   mod.eval <- mod.eval[with(mod.eval, order(mod.AIC$dAICc.lib)), ]
   
-  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # print the R2 of predicted and observed for the equivalent linear models
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -309,7 +314,8 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
       cat("100*R2 for linear model",modname,": \n")
       cat((round(100*cor(as.numeric(y[!is.na(y)]), as.numeric(get(modname)$fitted.value))^2)), "\n")
       return()
-    } 
+    }
+    print("R2 of equivalent linear model")
     print.r2.lm("mod.DR.lm")
     print.r2.lm("mod.D_R.lm")
     print.r2.lm("mod.D.lm")
@@ -317,6 +323,18 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
     print.r2.lm("mod.0.lm")
   }  
 
+  #can handle all data and link types - marginal and conditional R2
+  print("Lefcheck marginal and conditional R2 - rows are DR, D_R, D, R, 0")
+  rsq = rsquared.glmm(list(mod.DR, mod.D_R, mod.D, mod.R, mod.0))
+  print(rsq)
+  
+  #can only handle numeric data types - marginal and conditional R2
+  if(!(ordered.fac.treatment[1] == c("as.binomial"))){
+  print("Nakagawa & Schielzeth marginal and conditional R2 - rows are DR, D_R, D, R, 0")
+  mumin.models <- do.call(rbind, lapply(list(mod.DR, mod.D_R, mod.D, mod.R, mod.0), r.squaredGLMM))
+  print(mumin.models)
+  }
+  
   #print the AIC of the best model
   cat("\nAIC of best model:", AIC(get(rownames(mod.eval)[1])), "\n")
   

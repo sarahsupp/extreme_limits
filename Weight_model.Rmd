@@ -5,7 +5,7 @@ This document describes the model of Weight observed in Arizona and how it covar
 
 ```{r}
 #load the Hummingbird data; i.e. the d.f. site.dat
-load("/Users/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
+load("/home/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
 ```
 
 How does weight vary with fat?
@@ -93,7 +93,7 @@ site.dat <- site.dat[,c("LOC", "Weight", "Fat", "yearfac", "mofac")]
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the weight metrics in the data frame 'yearly.weight.stat' to be used for modelling
 ````{r}
-load("/Users/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.weight.stat <- merge(x=site.dat, y=yearly.climate, by.x='yearfac', by.y='yr')
 rm(site.dat, yearly.climate)
@@ -119,7 +119,7 @@ xyplot(Fat ~ winterNDVI, data=yearly.weight.stat) + layer(panel.smoother(x, y, m
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
-source('/Users/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
+source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ````
 
 Using aforementioned function evaluate hierarchical models of WEIGHT as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
@@ -128,7 +128,6 @@ attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='Weight', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
-
 detach(yearly.weight.stat)
 ````
 
@@ -138,7 +137,6 @@ attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='Fat', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
-
 detach(yearly.weight.stat)
 ````
 
