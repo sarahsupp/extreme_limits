@@ -251,20 +251,21 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
     return(Akai.weight)
   }
   
-  A.weight <- round(Akaike.weight(mod.AIC$dAICc.lib), 2)
-  mod.AIC <- cbind.data.frame(mod.AIC, A.weight)
+  A.weight.lib <- round(Akaike.weight(mod.AIC$dAICc.lib), 2)
+  mod.AIC <- cbind.data.frame(mod.AIC, A.weight.lib)
   
   conf.int95.DR <-  sqrt(diag(vcov(mod.DR)))[-1]
   conf.int95.D <-  sqrt(diag(vcov(mod.D)))[-1]
   conf.int95.R <-  sqrt(diag(vcov(mod.R)))[-1]
   conf.int95.D_R <-  sqrt(diag(vcov(mod.D_R)))[-1]
   
-  print("")
-  print("Standard Error for estimates")
-  print(paste("D, R, DR:", conf.int95.DR))
-  print(paste("D, R:", conf.int95.D_R))
-  print(paste("D:", conf.int95.D))
-  print(paste("R:", conf.int95.R))
+  SE.DR = c(conf.int95.DR[1], conf.int95.DR[2], conf.int95.DR[3])
+  SE.D_R = c(conf.int95.DR[1],conf.int95.D_R[2], NA)
+  SE.D = c(conf.int95.D[1], NA, NA)
+  SE.R = c(NA, conf.int95.R[1], NA)
+  SE.0 = rep(NA, 3)
+  SE <- rbind(SE.DR, SE.D, SE.R, SE.0, SE.D_R)
+  colnames(SE) <- c('SE_D', 'SE_R', 'SE_DR')
   
   #get the parameter estimates
   par.es.DR <- fixef(mod.DR)[-1]
@@ -296,13 +297,14 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   conf.int95[which(conf.int95 >= 100) ] <- round(conf.int95[which(conf.int95 >= 100 )])
   colnames(conf.int95) <- c('D_low', 'D_high', 'R_low', 'R_high', 'DR_low', 'DR_high', 'D_est', 'R_est', 'DR_est')
   
-  mod.eval <- cbind.data.frame(mod.name, mod.AIC, conf.int95)
-  mod.eval <- mod.eval[with(mod.eval, order(mod.AIC$dAICc.lib)), ]
+  #start dataframe for output
+  mod.eval <- cbind.data.frame(mod.name, mod.AIC, conf.int95, SE)
   
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-  # print the R2 of predicted and observed for the equivalent linear models
+  # print R2 of predicted and observed for the equivalent fixed-effect linear models, pseudo, marginal, and conditional R2
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   
+  #print equivalent fixed effects R2 (where LOC is treated as a fixed instead of random effect)
   if (!((ordered.fac.treatment[1] == c("as.binomial")) & (!is.null(dim(y))))){
     #for all other models
     mod.DR.lm <- lm(formula = as.numeric(y) ~ D*R + LOC., weights=nbirds.)
@@ -310,34 +312,61 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
     mod.D.lm <- lm(formula = as.numeric(y) ~ D + LOC., weights=nbirds.)
     mod.R.lm <- lm(formula = as.numeric(y) ~ R + LOC., weights=nbirds.)
     mod.0.lm <- lm(formula = as.numeric(y) ~ LOC., weights=nbirds.)
+   
     print.r2.lm <- function(modname){
-      cat("100*R2 for linear model",modname,": \n")
-      cat((round(100*cor(as.numeric(y[!is.na(y)]), as.numeric(get(modname)$fitted.value))^2)), "\n")
-      return()
+      #cat("100*R2 for linear model",modname,": \n")
+      #cat((round(100*cor(as.numeric(y[!is.na(y)]), as.numeric(get(modname)$fitted.value))^2)), "\n")
+      r2 =round(100*cor(as.numeric(y[!is.na(y)]), as.numeric(get(modname)$fitted.value))^2)
+      return(r2)
     }
-    print("R2 of equivalent linear model")
-    print.r2.lm("mod.DR.lm")
-    print.r2.lm("mod.D_R.lm")
-    print.r2.lm("mod.D.lm")
-    print.r2.lm("mod.R.lm")
-    print.r2.lm("mod.0.lm")
+    fixefR2 = c(print.r2.lm("mod.DR.lm"), print.r2.lm("mod.D.lm"), print.r2.lm("mod.R.lm"), 
+                print.r2.lm("mod.0.lm"), print.r2.lm("mod.D_R.lm"))
+    mod.eval <- cbind.data.frame(mod.eval, fixefR2)
   }  
-
-  #can handle all data and link types - marginal and conditional R2
-  print("Lefcheck marginal and conditional R2 - rows are DR, D_R, D, R, 0")
-  rsq = rsquared.glmm(list(mod.DR, mod.D_R, mod.D, mod.R, mod.0))
-  print(rsq)
   
-  #can only handle numeric data types - marginal and conditional R2
-  if(!(ordered.fac.treatment[1] == c("as.binomial"))){
-  print("Nakagawa & Schielzeth marginal and conditional R2 - rows are DR, D_R, D, R, 0")
-  mumin.models <- do.call(rbind, lapply(list(mod.DR, mod.D_R, mod.D, mod.R, mod.0), r.squaredGLMM))
-  print(mumin.models)
+  if (!((ordered.fac.treatment[1] == c("as.binomial")))){
+  #calc pseudo R2 1-(model deviance/null deviance) for lmer
+  pseudoR2 = function(modname){ 
+    # compare residual variance of full model against  residual variance of a (fixed) intercept-only null model
+    #cat("100*R2 for pseudoR2", modname,": \n")
+    r2 = 1-(var(residuals(get(modname)))/(var(model.response(model.frame(get(modname))))))
+    #cat(round(r2*100),"\n")
+    return(r2)              
   }
+  pseudR2 = c(pseudoR2("mod.DR"), pseudoR2("mod.D"), pseudoR2("mod.R"), pseudoR2("mod.0"), pseudoR2("mod.D_R"))
+  mod.eval <- cbind.data.frame(mod.eval, pseudR2)
+}
+
+  if (ordered.fac.treatment[1] == c("as.binomial")){
+    #calc pseudo R2 1-(model deviance/null deviance) for glmer
+    #print pseudo R2 1-(model deviance/null deviance) for lmer
+    pseudoR2glmer = function(mod, modnull=mod.0){ 
+      # compare residual variance of full model against  residual variance of a (fixed) intercept-only null model
+      a = anova(mod, modnull)
+      r2 = 1-(a$deviance[2]/a$deviance[1])
+      return(r2)              
+    }
+    pseudR2 = c(pseudoR2glmer(mod.DR), pseudoR2glmer(mod.D), pseudoR2glmer(mod.R), pseudoR2glmer(mod.0), pseudoR2glmer(mod.D_R))
+    mod.eval <- cbind.data.frame(mod.eval, pseudR2)
+  }
+  
+  #can handle all data and link types - marginal and conditional R2
+  cat("Calculating Lefcheck (Nakagawa & Schielzeth) marginal and conditional R2")
+  rsq = rsquared.glmm(list(mod.DR, mod.D, mod.R, mod.0, mod.D_R))
+  mod.eval <- cbind.data.frame(mod.eval, "MarginalR2"=rsq$Marginal, "ConditonalR2"=rsq$Conditional)
+  
+#   #can only handle numeric data types - marginal and conditional R2 (should be identical result to above, for numeric data)
+#   if(!(ordered.fac.treatment[1] == c("as.binomial"))){
+#   print("Nakagawa & Schielzeth marginal and conditional R2 - rows are DR, D_R, D, R, 0")
+#   mumin.models <- do.call(rbind, lapply(list(mod.DR, mod.D_R, mod.D, mod.R, mod.0), r.squaredGLMM))
+#   print(mumin.models)
+#   }
+  
+  mod.eval <- mod.eval[with(mod.eval, order(mod.AIC$dAICc.lib)), ]
   
   #print the AIC of the best model
   cat("\nAIC of best model:", AIC(get(rownames(mod.eval)[1])), "\n")
-  
+  cat("There were", length(y), "observations and", length(unique(LOC)), "groups in the model.")
   cat("\nModel evaluation completed and tabulated:\n")
   return(mod.eval)
 }
