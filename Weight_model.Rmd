@@ -117,6 +117,32 @@ xyplot(Fat ~ winterNDVI, data=yearly.weight.stat) + layer(panel.smoother(x, y, m
 
 ```
 
+
+GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
+```{r fig.width=7, fig.height=6, warning=FALSE}
+require(ggplot2)
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + geom_point() + theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1)) + ylab("body mass (grams)")
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Weight)) + geom_point() + 
+  theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1)) + ylab("body mass(grams)")
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1)) + ylab("fat score")
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + 
+  theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1)) + ylab("fat score")
+
+#overall response
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) + ylab("body mass(grams)")
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Weight)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) + ylab("body mass(grams)")
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) + ylab("fat score")
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) + ylab("fat score")
+```
+
+
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
 source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')

@@ -80,7 +80,7 @@ yearly.molt.stat <- merge(x=MOLT.quants,y=yearly.climate,by='yr')
 rm(MOLT.quants,yearly.climate)
 ````
 
-Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
+XYPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
 ```{r fig.width=7, fig.height=6, warning=FALSE}
 require(lattice)
 require(latticeExtra)
@@ -93,6 +93,22 @@ xyplot(MOLT.quant.50 ~ winterNDVI, data=yearly.molt.stat) + layer(panel.smoother
 
 ```
 
+GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
+```{r fig.width=7, fig.height=6, warning=FALSE}
+require(ggplot2)
+
+ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(yearly.Te.10C.q, MOLT.quant.50)) + geom_point() + theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1))
+
+ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT.quant.50)) + geom_point() + 
+  theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1))
+
+#overall response
+ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(yearly.Te.10C.q, MOLT.quant.50)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1))
+
+ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT.quant.50)) + geom_point(size=count) + 
+  theme_bw() + stat_smooth(method="lm", aes(group=1))
+
+```
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
 source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')

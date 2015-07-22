@@ -66,6 +66,22 @@ xyplot(sess.quant.50 ~ winterNDVI|LOC, data=yearly.catch.stat) + layer(panel.smo
 xyplot(sess.quant.50 ~ yearly.Te.10C.q, data=yearly.catch.stat) + layer(panel.smoother(x, y, method = "lm"))
 xyplot(sess.quant.50 ~ winterNDVI, data=yearly.catch.stat) + layer(panel.smoother(x, y, method = "lm"))
 
+```
+
+
+GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
+```{r fig.width=7, fig.height=6, warning=FALSE}
+require(ggplot2)
+
+ggplot(yearly.catch.stat[complete.cases(yearly.catch.stat),], aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_bw() + facet_wrap(~LOC) #+ stat_smooth(method="lm", aes(group=1))
+
+ggplot(yearly.catch.stat[complete.cases(yearly.catch.stat),], aes(winterNDVI, sess.quant.50)) + geom_point() + 
+  theme_bw() + facet_wrap(~LOC) # + stat_smooth(method="lm", aes(group=1))
+
+#overall response
+ggplot(yearly.catch.stat[complete.cases(yearly.catch.stat),], aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1))
+
+ggplot(yearly.catch.stat[complete.cases(yearly.catch.stat),], aes(winterNDVI, sess.quant.50)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1))
 
 ```
 

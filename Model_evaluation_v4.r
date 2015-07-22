@@ -342,8 +342,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
     #print pseudo R2 1-(model deviance/null deviance) for lmer
     pseudoR2glmer = function(mod, modnull=mod.0){ 
       # compare residual variance of full model against  residual variance of a (fixed) intercept-only null model
-      a = anova(mod, modnull)
-      r2 = 1-(a$deviance[2]/a$deviance[1])
+      r2 = 1-(mod$logLik/modnull$logLik)
       return(r2)              
     }
     pseudR2 = c(pseudoR2glmer(mod.DR), pseudoR2glmer(mod.D), pseudoR2glmer(mod.R), pseudoR2glmer(mod.0), pseudoR2glmer(mod.D_R))
