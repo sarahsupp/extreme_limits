@@ -73,15 +73,25 @@ GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.
 ```{r fig.width=7, fig.height=6, warning=FALSE}
 require(ggplot2)
 
-ggplot(yearly.catch.stat[complete.cases(yearly.catch.stat),], aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_bw() + facet_wrap(~LOC) #+ stat_smooth(method="lm", aes(group=1))
+ycs_cc = yearly.catch.stat[complete.cases(yearly.catch.stat),]
+ycs_cc$sess.quant.50 = format(ycs_cc$sess.quant.50, format = "%b %d")
 
-ggplot(yearly.catch.stat[complete.cases(yearly.catch.stat),], aes(winterNDVI, sess.quant.50)) + geom_point() + 
-  theme_bw() + facet_wrap(~LOC) # + stat_smooth(method="lm", aes(group=1))
+ggplot(ycs_cc, aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_bw() + 
+  stat_smooth(method="lm", formula = y ~ x, aes(group=1), data=ycs_cc) + 
+  scale_y_date(limits=c(as.Date("1900-03-23"), as.Date("1900-06-04"))) +
+  ylab("50th Quantile Arrival Date") +  facet_wrap(~LOC) 
+
+ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + 
+  theme_bw() + stat_smooth(method="lm", formula = y ~ x, aes(group=1), data=ycs_cc) + 
+  scale_y_date(limits=c(as.Date("1900-03-23"), as.Date("1900-06-04"))) +
+  ylab("50th Quantile Arrival Date") +  facet_wrap(~LOC) 
 
 #overall response
-ggplot(yearly.catch.stat[complete.cases(yearly.catch.stat),], aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1))
+ggplot(ycs_cc, aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_bw() + 
+  stat_smooth(method="lm", aes(group=1))
 
-ggplot(yearly.catch.stat[complete.cases(yearly.catch.stat),], aes(winterNDVI, sess.quant.50)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1))
+ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + theme_bw() + 
+  stat_smooth(method="lm", aes(group=1))
 
 ```
 
