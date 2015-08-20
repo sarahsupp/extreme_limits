@@ -69,7 +69,6 @@ p = apply(moltscores, 1, function(x) {x/num} )
 index = c(1:length(moltscores))
 
 meanmolt = moltscores[round(sum(index * p))]
-
 ```
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the molt metrics in the data frame 'yearly.molt.stat' to be used for modelling
@@ -90,7 +89,6 @@ xyplot(MOLT.quant.50 ~ winterNDVI|LOC, data=yearly.molt.stat) + layer(panel.smoo
 #overall response
 xyplot(MOLT.quant.50 ~ yearly.Te.10C.q, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
 xyplot(MOLT.quant.50 ~ winterNDVI, data=yearly.molt.stat) + layer(panel.smoother(x, y, method = "lm"))
-
 ```
 
 GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
@@ -105,10 +103,10 @@ ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT
 #overall response
 ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(yearly.Te.10C.q, MOLT.quant.50)) + geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1))
 
-ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT.quant.50)) + geom_point(size=count) + 
+ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT.quant.50)) + geom_point() + 
   theme_bw() + stat_smooth(method="lm", aes(group=1))
-
 ```
+
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
 source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')

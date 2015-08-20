@@ -153,6 +153,12 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
     y <- ordered.var.2.sim.count.table(y)
   }
   
+  if ((class(y[1])=="Date") & (ordered.fac.treatment[1] == c("as.num"))){
+    cat(yname, " is a Date. options are to treat as numeric, by number of days difference.\n")    
+    cat(yname, " will be converted to numeric \n")
+    y <- as.numeric(y)
+  }
+  
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # apply centering and standardization ####
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -319,6 +325,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
       r2 =round(100*cor(as.numeric(y[!is.na(y)]), as.numeric(get(modname)$fitted.value))^2)
       return(r2)
     }
+    cat("Calculating fixed-effects R2\n")
     fixefR2 = c(print.r2.lm("mod.DR.lm"), print.r2.lm("mod.D.lm"), print.r2.lm("mod.R.lm"), 
                 print.r2.lm("mod.0.lm"), print.r2.lm("mod.D_R.lm"))
     mod.eval <- cbind.data.frame(mod.eval, fixefR2)
@@ -333,6 +340,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
     #cat(round(r2*100),"\n")
     return(r2)              
   }
+  cat("Calculating psuedo R2 for numeric response variable \n")
   pseudR2 = c(pseudoR2("mod.DR"), pseudoR2("mod.D"), pseudoR2("mod.R"), pseudoR2("mod.0"), pseudoR2("mod.D_R"))
   mod.eval <- cbind.data.frame(mod.eval, pseudR2)
 }
@@ -342,9 +350,10 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
     #print pseudo R2 1-(model deviance/null deviance) for lmer
     pseudoR2glmer = function(mod, modnull=mod.0){ 
       # compare residual variance of full model against  residual variance of a (fixed) intercept-only null model
-      r2 = 1-(mod$logLik/modnull$logLik)
+      r2 = 1-(as.numeric(summary(mod)$logLik)/as.numeric(summary(modnull)$logLik))
       return(r2)              
     }
+    cat("Calculating psuedo R2 for binomial response variable \n")
     pseudR2 = c(pseudoR2glmer(mod.DR), pseudoR2glmer(mod.D), pseudoR2glmer(mod.R), pseudoR2glmer(mod.0), pseudoR2glmer(mod.D_R))
     mod.eval <- cbind.data.frame(mod.eval, pseudR2)
   }

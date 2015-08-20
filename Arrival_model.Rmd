@@ -74,7 +74,6 @@ GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.
 require(ggplot2)
 
 ycs_cc = yearly.catch.stat[complete.cases(yearly.catch.stat),]
-ycs_cc$sess.quant.50 = format(ycs_cc$sess.quant.50, format = "%b %d")
 
 ggplot(ycs_cc, aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_bw() + 
   stat_smooth(method="lm", formula = y ~ x, aes(group=1), data=ycs_cc) + 
