@@ -133,3 +133,15 @@ mod.evaluation(yname='MOLT.quant.25', centering='CGM', stand=T, ordered.fac.trea
                log.D=T, R="winterNDVI", D="yearly.Te.10C.q")
 detach(yearly.molt.stat)
 ````
+
+Using  function evaluate hierarchical models of median Molt stage (75th Percentile of Molt) as a 
+linear function of annual physiological demand and resource availability, allowing for a 
+random intercept associated with 'site' 
+Binomial, using winterNDVI as resource AVAILABILITY
+````{r}
+attach(yearly.molt.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='MOLT.quant.75', centering='CGM', stand=T, ordered.fac.treatment = "as.binomial", 
+               log.D=T, R="winterNDVI", D="yearly.Te.10C.q")
+detach(yearly.molt.stat)
+````

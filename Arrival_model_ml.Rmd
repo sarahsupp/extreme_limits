@@ -113,3 +113,11 @@ attach(yearly.catch.stat)
 mod.evaluation(yname='sess.quant.25', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI") 
 detach(yearly.catch.stat)
 ````
+
+Using  function evaluate hierarchical models of 75th percentile arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
+````{r}
+attach(yearly.catch.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='sess.quant.75', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI") 
+detach(yearly.catch.stat)
+````
