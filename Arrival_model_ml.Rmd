@@ -5,7 +5,7 @@ This document describes the model of Arrival/catch observed in Arizona and how i
 
 ```{r}
 #load the Hummingbird arrival data; i.e. the d.f. yearly.catch.stat
-load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.catch.stat.rdata")
+load("/Users/mcwlim/Desktop/GitHub/extreme_limits/data/yearly.catch.stat.rdata")
 ```
 
 ```{r}
@@ -26,14 +26,14 @@ range(yearly.catch.stat$sess.quant.50)
 mean(yearly.catch.stat$sess.quant.50)
 mean(yearly.catch.stat[yearly.catch.stat$yr==2006,]$sess.quant.50)
 mean(yearly.catch.stat[yearly.catch.stat$yr==2010,]$sess.quant.50)
-````
+```
 
 #Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the arrival/catch metrics in #the data frame 'yearly.catch.stat' to be used for modelling
-````{r}
-load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+```{r}
+load("/Users/mcwlim/Desktop/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)
-````
+```
 
 Plot relationship of NDVI with precipitation and with physiological demand
 ```{r}
@@ -72,6 +72,7 @@ xyplot(sess.quant.50 ~ winterNDVI, data=yearly.catch.stat) + layer(panel.smoothe
 GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
 ```{r fig.width=7, fig.height=6, warning=FALSE}
 require(ggplot2)
+require(gridExtra)
 
 ycs_cc = yearly.catch.stat[complete.cases(yearly.catch.stat),]
 
@@ -94,7 +95,7 @@ p8 <- ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + theme_clas
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
-source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
+source('/Users/mcwlim/Desktop/GitHub/extreme_limits/Model_evaluation_v4_ml.r')
 ````
 
 Using aforementioned function evaluate hierarchical models of median arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 

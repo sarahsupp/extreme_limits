@@ -5,7 +5,7 @@ This document describes the model of Weight observed in Arizona and how it covar
 
 ```{r}
 #load the Hummingbird data; i.e. the d.f. site.dat
-load("/home/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
+load("/Users/mcwlim/Desktop/GitHub/extreme_limits/data/site.dat.rdata")
 ```
 
 How does weight vary with fat?
@@ -93,7 +93,7 @@ site.dat <- site.dat[,c("LOC", "Weight", "Fat", "yearfac", "mofac")]
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the weight metrics in the data frame 'yearly.weight.stat' to be used for modelling
 ````{r}
-load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+load("/Users/mcwlim/Desktop/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.weight.stat <- merge(x=site.dat, y=yearly.climate, by.x='yearfac', by.y='yr')
 rm(site.dat, yearly.climate)
@@ -121,6 +121,7 @@ xyplot(Fat ~ winterNDVI, data=yearly.weight.stat) + layer(panel.smoother(x, y, m
 GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
 ```{r fig.width=7, fig.height=6, warning=FALSE}
 require(ggplot2)
+require(gridExtra)
 
 ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + geom_point() + theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1)) + ylab("body mass (grams)")
 
@@ -142,30 +143,33 @@ p5 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly
 p6 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
 
 # Run Weight_model_ml.Rmd, Molt_model_ml.Rmd, and Arrival_model_ml.Rmd to get all the plots and then use grid.arrange to plot them all together.
+jpeg("C:/Users/mcwlim/Dropbox/NASA_Hummingbirds/P4_ExtremeEvents_Susan/P4_Paper_drafts/paper_figures/overallresponses_bw.jpg", height=10, width=8, units="in", res=500)
 grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol=2)
+dev.off()
+
 ```
 
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
 ````{r}
-source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
+source('/Users/mcwlim/Desktop/GitHub/extreme_limits/Model_evaluation_v4_ml.r')
 ````
 
 Using aforementioned function evaluate hierarchical models of WEIGHT as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-````{r}
+```{r}
 attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='Weight', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
 detach(yearly.weight.stat)
-````
+```
 
 Using the function evaluate hierarchical models of FAT as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-````{r}
+```{r}
 attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='Fat', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
 detach(yearly.weight.stat)
-````
+```
 
