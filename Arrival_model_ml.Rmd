@@ -87,9 +87,9 @@ ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() +
   ylab("50th Quantile Arrival Date") +  facet_wrap(~LOC) 
 
 #overall response
-p7 <- ggplot(ycs_cc, aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Timing of \nspring arrival\n") + xlab("\nPhysiological demand (D)")
+p3 <- ggplot(ycs_cc, aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Timing of spring arrival\n") + xlab("\nPhysiological demand (D)")
 
-p8 <- ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("\nResource availability (R)")
+p4 <- ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("\nResource availability (R)")
 
 ```
 

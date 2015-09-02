@@ -134,13 +134,13 @@ ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, 
   theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1)) + ylab("fat score")
 
 #overall response
-p3 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Body mass\n (grams)\n") + xlab("")
+p5 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Body mass (grams)\n") + xlab("")
 
-p4 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
+p6 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
 
-p5 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Fat score\n") + xlab("")
+p7 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Fat score\n") + xlab("")
 
-p6 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
+p8 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
 
 # Run Weight_model_ml.Rmd, Molt_model_ml.Rmd, and Arrival_model_ml.Rmd to get all the plots and then use grid.arrange to plot them all together.
 jpeg("C:/Users/mcwlim/Dropbox/NASA_Hummingbirds/P4_ExtremeEvents_Susan/P4_Paper_drafts/paper_figures/overallresponses_bw.jpg", height=10, width=8, units="in", res=500)
