@@ -137,9 +137,9 @@ p5 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly
 
 p6 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
 
-p7 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Fat score\n") + xlab("")
+p7 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Fat score\n") + xlab("\nPhysiological demand (D)")
 
-p8 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
+p8 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("\nResource availability (R)")
 
 # Run Weight_model_ml.Rmd, Molt_model_ml.Rmd, and Arrival_model_ml.Rmd to get all the plots and then use grid.arrange to plot them all together.
 grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol=2)
