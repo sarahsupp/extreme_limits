@@ -27,17 +27,17 @@ fatscores[3] / sum(fatscores)
 ```
 
 Weight does not strongly vary with molt
-````{r}
+```{r}
 ordermolt <- function(x){ordered(toupper(x), levels=c("M","R",1:8,0,9,"F","L"))}
 site.dat$PriMary.Molt <- ordermolt(site.dat$PriMary.Molt)
 plot(site.dat$Weight ~ site.dat$PriMary.Molt, col="light grey", pch=19, 
      xlab = "Primary Molt", ylab = "Weight", cex.axis = 2, cex.lab = 2)
-````
+```
 
 FYI: How are observations distributed across Molt classes?
 ```{r}
 table(site.dat$PriMary.Molt)
-````
+```
 
 
 Which pairs of primary molt classes differ in weight?
@@ -47,37 +47,37 @@ tt[tt<0.2]
 ````
 
 Which pairs of secondary molt classes differ in weight?
-````{r}
+```{r}
 site.dat$Secondary.Molt <- ordermolt(site.dat$Secondary.Molt)
 plot(site.dat$Weight ~ site.dat$Secondary.Molt, col="light grey", xlab = "Secondary Molt Class", ylab = "Weight",
      , cex.axis = 2, cex.lab = 2, pch=19)
 table(site.dat$Secondary.Molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Secondary.Molt))[[1]][,4]), 3)
 tt[tt<.2]
-````
+```
 
 Which pairs of body molt classes differ in weight?
-````{r}
+```{r}
 site.dat$Body.Molt <- ordermolt(site.dat$Body.Molt)
 plot(site.dat$Weight ~ site.dat$Body.Molt, col="light grey", xlab="Body Molt Class", ylab="Weight", pch=19, 
      cex.lab = 2, cex.axis = 2)
 table(site.dat$Body.Molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Body.Molt))[[1]][,4]),3)
 tt[tt<.2]
-````
+```
 
 Which pairs of gorget/head molt classes differ in weight?
-````{r}
+```{r}
 site.dat$Gorget.head.molt <- ordermolt(site.dat$Gorget.head.molt)
 plot(site.dat$Weight ~ site.dat$Gorget.head.molt, col="light grey",xlab="gorget head molt", ylab="Weight", pch=19, 
      cex.lab = 2, cex.axis = 2)
 table(site.dat$Gorget.head.molt)
 tt<-round(sort(TukeyHSD(aov(site.dat$Weight ~ site.dat$Gorget.head.molt))[[1]][,4]),3)
 tt[tt<.2]
-````
+```
 
 Which pairs of tail molt classes differ in weight?
-````{r}
+```{r}
 site.dat$Tail.Molt <- ordermolt(site.dat$Tail.Molt)
 plot(site.dat$Weight ~ site.dat$Tail.Molt, col="light grey", xlab="tail molt", ylab="Weight", pch=19, 
      cex.lab = 2, cex.axis = 2)
@@ -92,12 +92,12 @@ site.dat <- site.dat[,c("LOC", "Weight", "Fat", "yearfac", "mofac")]
 ```
 
 Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the weight metrics in the data frame 'yearly.weight.stat' to be used for modelling
-````{r}
+```{r}
 load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.weight.stat <- merge(x=site.dat, y=yearly.climate, by.x='yearfac', by.y='yr')
 rm(site.dat, yearly.climate)
-````
+```
 
 Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resource availability (NDVI)
 ```{r fig.width=7, fig.height=6, warning=FALSE}
@@ -121,6 +121,7 @@ xyplot(Fat ~ winterNDVI, data=yearly.weight.stat) + layer(panel.smoother(x, y, m
 GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
 ```{r fig.width=7, fig.height=6, warning=FALSE}
 require(ggplot2)
+require(gridExtra)
 
 ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + geom_point() + theme_bw() + facet_wrap(~LOC) + stat_smooth(method="lm", aes(group=1)) + ylab("body mass (grams)")
 
@@ -147,25 +148,25 @@ grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol=2)
 
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
-````{r}
+```{r}
 source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
-````
+```
 
 Using aforementioned function evaluate hierarchical models of WEIGHT as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-````{r}
+```{r}
 attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='Weight', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
 detach(yearly.weight.stat)
-````
+```
 
 Using the function evaluate hierarchical models of FAT as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-````{r}
+```{r}
 attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='Fat', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
 detach(yearly.weight.stat)
-````
+```
 

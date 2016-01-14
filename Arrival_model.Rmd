@@ -28,12 +28,12 @@ mean(yearly.catch.stat[yearly.catch.stat$yr==2006,]$sess.quant.50)
 mean(yearly.catch.stat[yearly.catch.stat$yr==2010,]$sess.quant.50)
 ````
 
-#Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the arrival/catch metrics in #the data frame 'yearly.catch.stat' to be used for modelling
-````{r}
+Load the yearly climate (and NDVI) data which will serve as predictors and merge it with the arrival/catch metrics in #the data frame 'yearly.catch.stat' to be used for modelling
+```{r}
 load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 #gives you yearly.climate
 yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)
-````
+```
 
 Plot relationship of NDVI with precipitation and with physiological demand
 ```{r}
@@ -93,29 +93,29 @@ p4 <- ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + theme_clas
 ```
 
 Load a function ('mod.evaluation') to evaluate hierarchical models
-````{r}
+```{r}
 source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
-````
+```
 
 Using aforementioned function evaluate hierarchical models of median arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-````{r}
+```{r}
 attach(yearly.catch.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='sess.quant.50', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI") 
 detach(yearly.catch.stat)
-````
+```
 
 Using  function evaluate hierarchical models of 25th percentile arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-````{r}
+```{r}
 attach(yearly.catch.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='sess.quant.25', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI") 
 detach(yearly.catch.stat)
-````
+```
 Using  function evaluate hierarchical models of 75th percentile arrival as a linear function of annual physiological demand and resource availability, allowing for a random intercept associated with 'site' 
-````{r}
+```{r}
 attach(yearly.catch.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='sess.quant.75', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI") 
 detach(yearly.catch.stat)
-````
+```
