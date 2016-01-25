@@ -69,7 +69,7 @@ xyplot(sess.quant.50 ~ winterNDVI, data=yearly.catch.stat) + layer(panel.smoothe
 ```
 
 
-GGPLOT VERSION: Plot molt responses to a proxy for physiological (yearly.Te.10C.q) demand and resrouce availability (NDVI)
+GGPLOT VERSION: Plot arrival responses to a proxy for physiological (yearly.Te.10C.q) demand and resource availability (NDVI)
 ```{r fig.width=7, fig.height=6, warning=FALSE}
 require(ggplot2)
 

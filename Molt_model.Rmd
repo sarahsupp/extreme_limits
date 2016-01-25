@@ -20,7 +20,6 @@ ggplot(sd, aes(PriMary.Molt)) + geom_histogram() + facet_wrap(~yearfac) + theme_
 ```
 
 
-
 ```{r}
 #Calculate quantiles of molt distribution per site & year ('Molt.quant...'). quant.50 indicates the median molt stage at a given site and year
 
