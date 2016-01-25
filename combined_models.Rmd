@@ -1,0 +1,434 @@
+---
+title: "Combined Model and Figure Output"
+author: "Sarah Supp"
+date: "01/25/2016"
+output: html_document
+---
+
+This document outputs the results and figures for the manuscript titled "Winter conditions influence biological responses of migrating hummingbirds", by Catherine H. Graham, Sarah R. Supp, Donald R. Powers, Pieter Beck, Marisa C.W. Lim, Anusha Shankar, Tina Cormier, Scott Goetz, and Susan M. Wethington
+
+The script uses migratory capture data for Broad-tailed Hummingbird (BTHU) at sites in southeastern Arizona and remote-sensing data for NDVI (proxy for food resources) and temperature (converted to operative temperature) at known wintering locations in high-elevation Mexico.
+
+##Import Libraries and Source Code scripts
+```{r, echo=FALSE, warning=FALSE, message=FALSE} 
+library(ggplot2)
+library(gridExtra)
+library(lattice)
+library(latticeExtra)
+library(dplyr)
+
+# function ('mod.evaluation') to evaluate hierarchical models:
+source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
+```
+
+##Data
+There are several main datasets that need to be imported to run the final analysis and generate the figures for 2001-2012:
+ 
+ 1. Catch and arrival data
+ 2. Molt data
+ 3. Weight and body size data
+ 4. Winter climate summary data
+```{r}
+# Migration: BTHU arrival summarized as quantiles
+load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.catch.stat.rdata")
+# Migration: BTHU capture data (measurements taken at HMN sites)
+load("/home/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
+# Winter: weather data summarized for NDVI and temperature
+load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+```
+
+## Exploring the Migration Data
+
+### *BTHU Arrival at southeastern Arizona sites*
+
+The number of birds captured at each site across the time series:
+
+**Note: Is the EC point for 2006 accurate? That's a lot of birds to process!**
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=6, fig.width=8}
+ggplot(yearly.catch.stat, aes(yr, n.birds), group=LOC) + geom_point() + geom_line() + 
+  xlab("Year") + ylab("Number of BTHU captured") + 
+  theme(text = element_text(size=15)) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + 
+  scale_x_continuous(limits=c(2002, 2012), breaks=seq(2002, 2012, 2)) +
+  theme_bw() + facet_wrap(~LOC)
+```
+
+
+The number of birds captured at each site across the time series, showed as +/- the average number of birds caught at that site (doesn't take into account changes in effort since I don't have that data:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
+summary <- 
+  yearly.catch.stat %>%
+  select(LOC, yr, n.birds) %>%
+  group_by(LOC) %>%
+  mutate(total=sum(n.birds),
+         avg = mean(n.birds),
+         diff = n.birds - avg)
+
+ggplot(summary, aes(yr, diff), group=LOC) + geom_point() + 
+  xlab("Year") + ylab("Number of BTHU captured +/- the average at a site") + 
+  theme(text = element_text(size=15)) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + 
+  scale_x_continuous(limits=c(2002, 2012), breaks=2002:2012) +
+  geom_hline(aes(yintercept=0, col="gray")) + stat_smooth() +
+  theme_bw()
+```
+
+For the arrival data, we will use the median arrival data at a given site and year as our main response variable. This is calculated 50th quantile of the arrival distribution. It should be noted that in the dataset, the year is denoted as 1900, but this can be ignored - the month and day portions of the date are accurate.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
+# make sure that the quantile variable (already summarized) is classified as.Date
+yearly.catch.stat$sess.quant.05 <- as.Date(yearly.catch.stat$sess.quant.05, origin="2015-01-01")
+yearly.catch.stat$sess.quant.25 <- as.Date(yearly.catch.stat$sess.quant.25, origin="2015-01-01")
+yearly.catch.stat$sess.quant.50 <- as.Date(yearly.catch.stat$sess.quant.50, origin="2015-01-01")
+yearly.catch.stat$sess.quant.75 <- as.Date(yearly.catch.stat$sess.quant.75, origin="2015-01-01")
+yearly.catch.stat$sess.quant.95 <- as.Date(yearly.catch.stat$sess.quant.95, origin="2015-01-01")
+
+#plot the distribution of the arrival data
+ggplot(yearly.catch.stat, aes(yr, sess.quant.50)) + geom_point(aes(size=n.birds)) + theme_bw() + 
+  stat_smooth() + scale_x_continuous(breaks=seq(2002, 2012, 2))
+
+bthu.range <- range(yearly.catch.stat$sess.quant.50)
+bthu.mean <- mean(yearly.catch.stat$sess.quant.50)
+bthu.mean.2006 <- mean(yearly.catch.stat[yearly.catch.stat$yr==2006,]$sess.quant.50)
+bthu.mean.2010 <- mean(yearly.catch.stat[yearly.catch.stat$yr==2010,]$sess.quant.50)
+```
+
+Values for the 50th quantile (median) arrival date ranged from `r bthu.range[1]` to `r bthu.range[2]` with a mean arrival date of `r bthu.mean`. In 2006, the mean arrival date was `r bthu.mean.2006` and 2010 it was `r bthu.mean.2010`.
+
+### *BTHU Molt Stage for primary (flight) feathers*
+
+Although molt stage was observed across the entire body of the hummingbird, the molt stage of primary feathers is the most relevant to migration. Hummingbirds molt their primary feathers in order, so this variable is treated as an ordered factor ( M, R, 1, 2, 3, 4, 5, 6, 7, 8, 10, 9, F, L ) where M and R represent unmolted feathers (moderate wear and ragged) and F and L represent completed molt (fresh and light wear). stages 1-8 are considered early molt, and 10-9 is considered to be late molt. In general, migrating BTHU were usually captured in late or completed molt stages.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=5, fig.width=7}
+#keep only the variables you need
+molt.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
+
+#make an ordered categorical variable describing primary molt
+ordermolt <- function(x){ordered(x, levels=c("M","R",1:8,0,9,"F","L"))}
+molt.dat$PriMary.Molt <- ordermolt(molt.dat$PriMary.Molt)
+
+#plot molt stage by year for comparison
+sd <- molt.dat[complete.cases(molt.dat),]
+ggplot(sd, aes(PriMary.Molt)) + geom_histogram() + xlab("Primary Molt Stage") + ylab("number birds") +
+ theme_bw() +  facet_wrap(~yearfac)
+```
+
+Similar to arrival, we calculated the median molt stage for birds at a given site and year as our response variable, as the 50th quantile of the molt distribution.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+# Calculate molt quantiles
+getMOLTquant <- function(quantile.){
+  tapply(molt.dat$PriMary.Molt, INDEX=list(molt.dat$LOC, molt.dat$yearfac),
+        FUN=quantile, type=1, probs=c(quantile.), na.rm=T)}
+
+MOLT.quant.05 <- ordermolt(levels(molt.dat$PriMary.Molt)[as.vector(getMOLTquant(.05))])
+MOLT.quant.25 <- ordermolt(levels(molt.dat$PriMary.Molt)[as.vector(getMOLTquant(.25))])
+MOLT.quant.50 <- ordermolt(levels(molt.dat$PriMary.Molt)[as.vector(getMOLTquant(.50))])
+MOLT.quant.75 <- ordermolt(levels(molt.dat$PriMary.Molt)[as.vector(getMOLTquant(.75))])
+MOLT.quant.95 <- ordermolt(levels(molt.dat$PriMary.Molt)[as.vector(getMOLTquant(.95))])
+
+MOLT.quants <- cbind.data.frame(MOLT.quant.05, MOLT.quant.25, MOLT.quant.50, MOLT.quant.75, MOLT.quant.95)
+
+# Calculate variables to hold the site names ('LOC') and years ('yr') associated with the quantiles
+quant.temp <- tapply(molt.dat$PriMary.Molt, INDEX=list(molt.dat$LOC, molt.dat$yearfac),
+       FUN=quantile, type=1, probs=c(.05), na.rm=T)
+
+LOC <- rownames(quant.temp)
+yr <- rep(colnames(quant.temp), each=length(LOC))
+
+# Calculate the number of birds in each sample ('n.birds') (number of birds at each site in each year)
+n.birds <- as.vector(tapply(molt.dat$PriMary.Molt, INDEX=list(molt.dat$LOC, molt.dat$yearfac),
+                 FUN=function(x){length(which(!is.na(x)))}))
+
+# Save the new molt quantile data into a new data.frame called MOLT.quants
+MOLT.quants <- cbind.data.frame(LOC, yr, n.birds, MOLT.quants)
+
+# remove variables from the memory that are no longer needed
+rm(quant.temp, MOLT.quant.05, MOLT.quant.25, MOLT.quant.50, MOLT.quant.75, MOLT.quant.95, n.birds, LOC, yr)
+```
+
+
+The median molt stages for BTHU included later stages of early molt, late molt, and completed molt (stages 7-L).
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=6}
+mq50 <- MOLT.quants[,c(1:3,6)]
+mq50 <- mq50[complete.cases(mq50),]
+
+ggplot(mq50, aes(yr, MOLT.quant.50)) + geom_point(aes(size=n.birds), alpha=0.5) + 
+  xlab("Year") + ylab("Median molt stage") + theme_bw()
+
+moltscores <- table(mq50$MOLT.quant.50)
+
+# take a weighted average of the discrete classes for the mean molt score
+num = sum(moltscores)
+p = apply(moltscores, 1, function(x) {x/num} )
+index = c(1:length(moltscores))
+
+meanmolt = moltscores[round(sum(index * p))]
+```
+
+Birds were most commonly found in late molt stages (10-9; `r round(((moltscores[11] + moltscores[12]) / sum(moltscores)) * 100, 2)` %) and in completed molt (F-L; `r round(((moltscores[13] + moltscores[14]) / sum(moltscores)) * 100, 2)` %) compared to premolt and early molt stages (M-8; `r round((sum(moltscores[1:10]) / sum(moltscores)) * 100, 2)` %). The weighted average molt stage observed across the sites and years was 9 (late molt).
+
+
+### *BTHU Migratory Body Mass and Fat Scores*
+Hummingbirds are able to gain and lose body mass and fat in a short period of time, depending on their access to food resources and their energetic expenditure. Thus, the mass and fat of a hummingbird likely depends on environmental conditions at a much shorter timescale (hours or days) than the time between the winter and migratory seasons. However, weight and fat of a bird during the winter may have an impact on hummingbird's ability to undergo molt or it's decision to migrate.
+
+Body fat scores for hummingbirds are treated as an ordered factor (0, T, 1, 2, 3).
+
+Body fat and mass are positively correlated.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
+# manipulate fat and mass data in a new dataframe called body.dat
+body.dat <- site.dat
+
+body.dat$Fat[body.dat$Fat=="P"] <- 0
+orderfat <- function(x){ordered(x, levels=c(0, "T" ,1:3))}
+body.dat$Fat <- orderfat(body.dat$Fat)
+
+plot(body.dat$Weight ~ body.dat$Fat, col="light grey", xlab = "Fat Score", ylab = "Mass (grams)", 
+     pch=19, cex.axis = 1.5, cex.lab = 1.5)
+
+mass.mean <- round(mean(body.dat$Weight, na.rm=T), 2)
+mass.range <- range(body.dat$Weight, na.rm=T)
+mass.sd <- round(sd(body.dat$Weight, na.rm=T), 2)
+
+fatscores <- table(body.dat$Fat)
+```
+
+Migrating BTHU bodymass ranges from `r mass.range[1]` - `r mass.range[2]` grams with a  mean of `r mass.mean` (sd= `r mass.sd`) grams.
+
+Most BTHU were observed with low fat (0; `r round((fatscores[1] / sum(fatscores)) * 100, 2)` %) or a medium amount of fat (1; `r round((fatscores[3] / sum(fatscores)) * 100, 2)` %).
+
+
+Bodymass did not show a strong relationship to molt:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
+ordermolt <- function(x){ordered(toupper(x), levels=c("M","R",1:8,0,9,"F","L"))}
+body.dat$PriMary.Molt <- ordermolt(body.dat$PriMary.Molt)
+
+plot(body.dat$Weight ~ body.dat$PriMary.Molt, col="light grey", pch=19, 
+     xlab = "Primary Molt Stage", ylab = "Mass (grams)", cex.axis = 1.5, cex.lab = 1.5)
+
+# keep only the columns we need for the main analysis
+body.dat <- body.dat[,c("LOC", "Weight", "Fat", "yearfac", "mofac")]
+```
+
+
+### *Winter Climate Data, summarized for each year*
+
+We defined winter locations for BTHU by querying GBIF for records from 1936-2011 that occurred above an elevation of 1500 m for November 15 - March 15 (known winter distributional limits; Calder and Calder 1992, Pyle 1997). For all 201 locations meeting these criteria, we downloaded remote sensing variables for winter resources (NDVI and cumulative precipitation; 1 km resolution, interpolated to daily; MODIS and CFSv2 datasets) and winter thermal demand (percentile of 6-hour periods where operative temperature was < 10 C; 20 km resolution; NCEP and CFSv2 datasets; Greek et al. 1989, Walsberg 1995). Winter variables were summarized across the 201 sites as the mean winter NDVI, cumulative winter precipitation, and the percentile of daily operative temperatures at or below 10 C.
+
+A "bad" winter for a hummingbird could occur if:
+
+1. Resources are lower than average
+2. Temperatures are colder than average
+3. Resources are lower than average and temperatures are colder than average (worst case scenario)
+
+
+Average winter NDVI was positively correlated with cumulative precipitation, so we chose to use NDVI as our proxy for winter resources.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
+
+lm1 = lm(winterNDVI ~ wintercumpre, data = yearly.climate)
+
+# plot precipitation correlation with NDVI in winter - strong
+ggplot(yearly.climate, aes(wintercumpre, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
+  ylab("average winter NDVI") + xlab("cumulative winter precip (mm)") + #geom_text(aes(label=yr)) +
+  theme_classic() + theme(text = element_text(size=15)) + 
+  ggtitle(paste("R2 = ", round(summary(lm1)$r.sq, 2)))
+```
+
+NDVI and operative temperature were not significantly correlated, although there were some years when the percentile of daily operative temperatures was particularly high and NDVI was particularly low. 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
+
+lm2 = lm(winterNDVI ~ yearly.Te.10C.q, data = yearly.climate)
+
+# plot NDVI correlation with physiological demand - weak
+ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
+  ylab("average winter NDVI") + xlab("percent days with Te < 10 C") + geom_text(aes(label=yr)) +
+  theme_classic() + theme(text = element_text(size=15)) + 
+  ggtitle(paste("R2 = ", round(summary(lm2)$r.sq, 2)))
+```
+
+
+## Biological Response (Winter environment + Migration behavior and physiology)
+
+```{r}
+# Combine each of the response variable datasets with the climate data for analysis
+yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)                          # arrival
+yearly.molt.stat <- merge(x=MOLT.quants, y=yearly.climate, by='yr')                    # molt
+yearly.weight.stat <- merge(x=body.dat, y=yearly.climate, by.x='yearfac', by.y='yr')   # mass & fat
+```
+
+
+We can summarize the responses of all the variables together, without distinguishing for site-level effects. In general, winters with lower NDVI (resource proxy) were correlated with later migration arrival date and earlier stage molt. Winters with more cold periods were correlated with earlier stage molt, but didn't have a strong relationship to timing of arrival. There were not significant correlations among the mass and fat variables for migrating BTHU and the winter environmental predictor variables.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=8, fig.width=8}
+# keep only years with complete data for the arrival data
+ycs_cc = yearly.catch.stat[complete.cases(yearly.catch.stat),]
+
+#overall response
+p1 <- ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(yearly.Te.10C.q, MOLT.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Molt stage\n") + xlab("")
+
+p2 <- ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
+
+p3 <- ggplot(ycs_cc, aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Timing of spring arrival\n") + xlab("")
+
+p4 <- ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
+
+p5 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Body mass (grams)\n") + xlab("")
+
+p6 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
+
+p7 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Fat score\n") + xlab("\nPhysiological demand (D)")
+
+p8 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("\nResource availability (R)")
+
+grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol=2)
+```
+
+
+## Biological Response Models and results
+
+We used a function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **median arrival (50th quantile)** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here we  treat arrival date as 'numeric'. 
+
+```{r}
+attach(yearly.catch.stat)
+mod.evaluation(yname='sess.quant.50', centering='CGM', stand=T, 
+               ordered.fac.treatment = "as.num", log.D=T, 
+               R="winterNDVI") 
+detach(yearly.catch.stat)
+```
+
+We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **median molt stage (50th quantile)** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat  molt stage as 'binomial' since the distance between categories is not assumed to be constant. See the *methods* section of the manuscript for more details.
+````{r}
+attach(yearly.molt.stat)
+mod.evaluation(yname='MOLT.quant.50', centering='CGM', stand=T, 
+               ordered.fac.treatment = "as.binomial", log.D=T, 
+               R="winterNDVI", D="yearly.Te.10C.q")
+detach(yearly.molt.stat)
+````
+
+We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **body mass** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat body mass as numeric.
+```{r}
+attach(yearly.weight.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='Weight', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
+               R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
+detach(yearly.weight.stat)
+```
+
+We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **fat score** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat fat score as numeric, since the distance between categories is assumed to be constant.
+```{r}
+attach(yearly.weight.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='Fat', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
+               R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
+detach(yearly.weight.stat)
+```
+
+
+
+## Appendix
+
+### Site specific plots
+In general, winters with lower NDVI (resource proxy) seemed to be correlated with earlier migration arrival date across sites:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ycs_cc = yearly.catch.stat[complete.cases(yearly.catch.stat),]
+
+ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + 
+  theme_bw() + stat_smooth(method="lm", formula = y ~ x, aes(group=1), data=ycs_cc) + 
+  scale_y_date(limits=c(as.Date("1900-03-23"), as.Date("1900-06-04"))) +
+  ylab("50th Quantile Arrival Date") + xlab("mean winter NDVI") +
+  facet_wrap(~LOC) 
+```
+
+But winters with more low temperature days (<= 10 C) did not show a strong relationship with migration arrival dates across sites:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(ycs_cc, aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_bw() + 
+  stat_smooth(method="lm", formula = y ~ x, aes(group=1), data=ycs_cc) + 
+  scale_y_date(limits=c(as.Date("1900-03-23"), as.Date("1900-06-04"))) +
+  ylab("50th Quantile Arrival Date") + xlab("Percentile daily temps < 10C") +
+  facet_wrap(~LOC) 
+```
+
+In general, winters with lower NDVI (resource proxy) seemed to be correlated with migrating BTHU being in an earlier molt stage across sites:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(yearly.Te.10C.q, MOLT.quant.50)) +
+  geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) +
+  ylab("50th Quantile Molt Stage") + xlab("Mean winter NDVI") +
+  facet_wrap(~LOC)
+```
+
+But winters with more low temperature days were correlated with migrating BTHU being in an later molt stage across sites:
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT.quant.50)) + 
+  geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) +
+  ylab("50th Quantile Molt Stage") + xlab("Percentile daily temps < 10C") +
+  facet_wrap(~LOC)
+```
+
+There were not strong correlations among the mass and fat variables for migrating BTHU and the winter environmental predictor variables:
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Weight)) + 
+  geom_point() +  theme_bw() + stat_smooth(method="lm", aes(group=1)) + 
+  ylab("body mass(grams)") +  xlab("Mean winter NDVI") + facet_wrap(~LOC)
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + 
+  geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) + 
+  ylab("body mass (grams)") +  xlab("Percentile daily temps < 10C") + facet_wrap(~LOC)
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + 
+  geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) + 
+  ylab("fat score") + xlab("Mean winter NDVI") + facet_wrap(~LOC)
+
+ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + 
+  geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) + 
+  ylab("fat score") +  xlab("Percentile daily temps < 10C") + facet_wrap(~LOC)
+```
+
+### Biological Response Models for the 25th and 75th quantiles of the variables
+
+We used a function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of the biological response variables (arrival, molt, mass, and fat) as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we present the results using the 25th and 75th quantiles of the response data (Arrival and Molt), rather than the 50th quantile (median) results we present in the main manuscript. 
+
+**25th Quantile Arrival**
+```{r}
+attach(yearly.catch.stat)
+mod.evaluation(yname='sess.quant.25', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, R="winterNDVI") 
+detach(yearly.catch.stat)
+```
+
+**25th Quantile Molt**
+```{r}
+attach(yearly.molt.stat)
+#http://www.quantpsy.org/interact/interactions.htm
+mod.evaluation(yname='MOLT.quant.25', centering='CGM', stand=T, 
+               ordered.fac.treatment = "as.binomial", 
+               log.D=T, R="winterNDVI", D="yearly.Te.10C.q")
+detach(yearly.molt.stat)
+```
+
+
+**75th Quantile Arrival**
+```{r}
+attach(yearly.catch.stat)
+mod.evaluation(yname='sess.quant.75', centering='CGM', stand=T, 
+               ordered.fac.treatment = "as.num", 
+               log.D=T, R="winterNDVI") 
+detach(yearly.catch.stat)
+```
+
+**75th Quantile Molt**
+```{r}
+attach(yearly.molt.stat)
+mod.evaluation(yname='MOLT.quant.75', centering='CGM', stand=T, 
+               ordered.fac.treatment = "as.binomial", 
+               log.D=T, R="winterNDVI", D="yearly.Te.10C.q")
+detach(yearly.molt.stat)
+```
+
