@@ -103,17 +103,30 @@ Although molt stage was observed across the entire body of the hummingbird, the 
 #keep only the variables you need
 molt.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
 
+#simplify molt to 3 categories (M-8 = early, 9-0 = late, F-L = complete)
+molt.dat$molt3class <- as.character(molt.dat$PriMary.Molt)
+molt.dat$molt3class[molt.dat$molt3class %in% c("M", "R", "1", "2", "3", "4", "5", "6", "7", "8")] <- "early"
+molt.dat$molt3class[molt.dat$molt3class %in% c("9", "0")] <- "late"
+molt.dat$molt3class[molt.dat$molt3class %in% c("F", "L")] <- "complete"
+
 #make an ordered categorical variable describing primary molt
 ordermolt <- function(x){ordered(x, levels=c("M","R",1:8,0,9,"F","L"))}
 molt.dat$PriMary.Molt <- ordermolt(molt.dat$PriMary.Molt)
+
+ordermolt3 <- function(x){ordered(x, levels = c("early", "late", "complete"))}
+molt.dat$molt3class <- ordermolt3(molt.dat$molt3class)
 
 #plot molt stage by year for comparison
 sd <- molt.dat[complete.cases(molt.dat),]
 ggplot(sd, aes(PriMary.Molt)) + geom_histogram() + xlab("Primary Molt Stage") + ylab("number birds") +
  theme_bw() +  facet_wrap(~yearfac)
+
+#plot molt stage by year for comparison using only the 3 classes
+ggplot(sd, aes(molt3class)) + geom_histogram() + xlab("Primary Molt Stage") + ylab("number birds") +
+ theme_bw() +  facet_wrap(~yearfac)
 ```
 
-Similar to arrival, we calculated the median molt stage for birds at a given site and year as our response variable, as the 50th quantile of the molt distribution.
+Similar to arrival, we calculated the median molt stage for birds at a given site and year as our response variable, as the 50th quantile of the molt distribution, using ALL the molt classes (n=14) and using a simplified version of molt classes (n=3).
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
 # Calculate molt quantiles
@@ -145,6 +158,39 @@ MOLT.quants <- cbind.data.frame(LOC, yr, n.birds, MOLT.quants)
 
 # remove variables from the memory that are no longer needed
 rm(quant.temp, MOLT.quant.05, MOLT.quant.25, MOLT.quant.50, MOLT.quant.75, MOLT.quant.95, n.birds, LOC, yr)
+
+
+# USING ONLY THE 3 MOLT CLASSES
+
+# Calculate molt quantiles
+getMOLTquant3 <- function(quantile.){
+  tapply(molt.dat$molt3class, INDEX=list(molt.dat$LOC, molt.dat$yearfac),
+        FUN=quantile, type=1, probs=c(quantile.), na.rm=T)}
+
+MOLT.quant.05.3 <- ordermolt3(levels(molt.dat$molt3class)[as.vector(getMOLTquant3(.05))])
+MOLT.quant.25.3 <- ordermolt3(levels(molt.dat$molt3class)[as.vector(getMOLTquant3(.25))])
+MOLT.quant.50.3 <- ordermolt3(levels(molt.dat$molt3class)[as.vector(getMOLTquant3(.50))])
+MOLT.quant.75.3 <- ordermolt3(levels(molt.dat$molt3class)[as.vector(getMOLTquant3(.75))])
+MOLT.quant.95.3 <- ordermolt3(levels(molt.dat$molt3class)[as.vector(getMOLTquant3(.95))])
+
+MOLT.quants.3 <- cbind.data.frame(MOLT.quant.05.3, MOLT.quant.25.3, MOLT.quant.50.3, MOLT.quant.75.3, MOLT.quant.95.3)
+
+# Calculate variables to hold the site names ('LOC') and years ('yr') associated with the quantiles
+quant.temp.3 <- tapply(molt.dat$molt3class, INDEX=list(molt.dat$LOC, molt.dat$yearfac),
+       FUN=quantile, type=1, probs=c(.05), na.rm=T)
+
+LOC <- rownames(quant.temp.3)
+yr <- rep(colnames(quant.temp.3), each=length(LOC))
+
+# Calculate the number of birds in each sample ('n.birds') (number of birds at each site in each year)
+n.birds <- as.vector(tapply(molt.dat$molt3class, INDEX=list(molt.dat$LOC, molt.dat$yearfac),
+                 FUN=function(x){length(which(!is.na(x)))}))
+
+# Save the new molt quantile data into a new data.frame called MOLT.quants
+MOLT.quants.3 <- cbind.data.frame(LOC, yr, n.birds, MOLT.quants.3)
+
+# remove variables from the memory that are no longer needed
+rm(quant.temp.3, MOLT.quant.05.3, MOLT.quant.25.3, MOLT.quant.50.3, MOLT.quant.75.3, MOLT.quant.95.3, n.birds, LOC, yr)
 ```
 
 
@@ -158,6 +204,26 @@ ggplot(mq50, aes(yr, MOLT.quant.50)) + geom_point(aes(size=n.birds), alpha=0.5) 
   xlab("Year") + ylab("Median molt stage") + theme_bw()
 
 moltscores <- table(mq50$MOLT.quant.50)
+
+# take a weighted average of the discrete classes for the mean molt score
+num = sum(moltscores)
+p = apply(moltscores, 1, function(x) {x/num} )
+index = c(1:length(moltscores))
+
+meanmolt = moltscores[round(sum(index * p))]
+```
+
+
+The median molt stages for BTHU included later stages of early molt (M-8), late molt (9-0), and completed molt (F-L).
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=6}
+mq50 <- MOLT.quants.3[,c(1:3,6)]
+mq50 <- mq50[complete.cases(mq50),]
+
+ggplot(mq50, aes(yr, MOLT.quant.50.3)) + geom_point(aes(size=n.birds), alpha=0.5) + 
+  xlab("Year") + ylab("Median molt stage") + theme_bw()
+
+moltscores <- table(mq50$MOLT.quant.50.3)
 
 # take a weighted average of the discrete classes for the mean molt score
 num = sum(moltscores)
@@ -193,6 +259,15 @@ mass.range <- range(body.dat$Weight, na.rm=T)
 mass.sd <- round(sd(body.dat$Weight, na.rm=T), 2)
 
 fatscores <- table(body.dat$Fat)
+
+#plot body mass by year for comparison
+ggplot(body.dat, aes(Weight)) + geom_histogram(binwidth=0.25) + xlab("Body Mass (g)") + ylab("number birds") +
+ theme_bw() +  facet_wrap(~yearfac)
+
+#plot body fat by year for comparison
+sd <- body.dat[complete.cases(body.dat),]
+ggplot(sd, aes(Fat)) + geom_histogram(binwidth=0.25) + xlab("Fat Score") + ylab("number birds") +
+ theme_bw() +  facet_wrap(~yearfac)
 ```
 
 Migrating BTHU bodymass ranges from `r mass.range[1]` - `r mass.range[2]` grams with a  mean of `r mass.mean` (sd= `r mass.sd`) grams.
