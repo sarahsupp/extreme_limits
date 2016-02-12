@@ -24,27 +24,84 @@ source('/home/sarah/Documents/GitHub/extreme_limits/Model_evaluation_v4.r')
 ##Data
 There are several main datasets that need to be imported to run the final analysis and generate the figures for 2001-2012:
  
- 1. Catch and arrival data
- 2. Molt data
- 3. Weight and body size data
- 4. Winter climate summary data
+ 1. HMN migration season capture data (arrival, molt, body mass and body fat data)
+ 2. Winter climate summary data
 ```{r}
-# Migration: BTHU arrival summarized as quantiles
-load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.catch.stat.rdata")
-# Migration: BTHU capture data (measurements taken at HMN sites)
-load("/home/sarah/Documents/GitHub/extreme_limits/data/site.dat.rdata")
+# import raw HMN data
+rawdat = read.csv("/home/sarah/Documents/GitHub/extreme_limits/data/HMN_AZ_low&mid_elev_BTLH2002-2012.csv")
+
 # Winter: weather data summarized for NDVI and temperature
 load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
+```
+
+The raw HMN data needs to be filtered to only include records during the migratory season (March-May), 
+and we need to ensure that the data columns are the correct type (e.g. factor, numeric, Date) for analysis.
+```{r}
+# filter raw data to only include records for March - May (earlier sampling was not done, and later months include wandering breeders rather than migrators)
+hmn <- filter(rawdat, mo %in% c(3, 4, 5))
+
+# check data types for each column, coerce to correct for analysis. Make new columns for date as factor
+hmn$date <- as.Date(hmn$date, format = "%m/%d/%Y")
+
+#make an ordered categorical variable describing primary molt using all the classes, and using a simplified version (3 classes)
+ordermolt <- function(x){ordered(x, levels=c("M","R",1:8,0,9,"F","L"))}
+hmn$PriMary.Molt <- ordermolt(hmn$PriMary.Molt)
+
+#simplify molt to 3 categories (M-8 = early, 9-0 = late, F-L = complete)
+hmn$molt3class <- as.character(hmn$PriMary.Molt)
+hmn$molt3class[hmn$molt3class %in% c("M", "R", "1", "2", "3", "4", "5", "6", "7", "8")] <- "early"
+hmn$molt3class[hmn$molt3class %in% c("9", "0")] <- "late"
+hmn$molt3class[hmn$molt3class %in% c("F", "L")] <- "complete"
+ordermolt3 <- function(x){ordered(x, levels = c("early", "late", "complete"))}
+hmn$molt3class <- ordermolt3(hmn$molt3class)
+
+# Make new columns for date as factor
+hmn$mofac <- ordered(hmn$mo, levels=c(3,4,5))
+hmn$yearfac <- ordered(hmn$year, levels=c(2002:2012))
+hmn$LOC <- hmn$Location
 ```
 
 ## Exploring the Migration Data
 
 ### *BTHU Arrival at southeastern Arizona sites*
 
+First, let's calculate the arrival quantiles for the migrating birds at each site and year
+```{r}
+#keep only the variables you need
+arrival.dat <- hmn[, c("LOC", "date", "yearfac", "mofac")]
+
+getARRIVALquant <- function(quantile.){
+  tapply(arrival.dat$date, INDEX=list(arrival.dat$LOC, arrival.dat$yearfac),
+        FUN=quantile, type=1, probs=c(quantile.), na.rm=T)}
+
+ARR.quant.05 <- as.Date(as.vector(getARRIVALquant(.05)), origin="1970-01-01")
+ARR.quant.25 <- as.Date(as.vector(getARRIVALquant(.25)), origin="1970-01-01")
+ARR.quant.50 <- as.Date(as.vector(getARRIVALquant(.50)), origin="1970-01-01")
+ARR.quant.75 <- as.Date(as.vector(getARRIVALquant(.75)), origin="1970-01-01")
+ARR.quant.95 <- as.Date(as.vector(getARRIVALquant(.95)), origin="1970-01-01")
+
+ARR.quants <- cbind.data.frame(ARR.quant.05, ARR.quant.25, ARR.quant.50, ARR.quant.75, ARR.quant.95)
+
+# Calculate variables to hold the site names ('LOC') and years ('yr') associated with the quantiles
+quant.temp <- tapply(hmn$date, INDEX=list(hmn$LOC, hmn$yearfac),
+       FUN=quantile, type=1, probs=c(.05), na.rm=T)
+
+LOC <- rownames(quant.temp)
+yr <- rep(colnames(quant.temp), each=length(LOC))
+
+# Calculate the number of birds in each sample ('n.birds') (number of birds at each site in each year)
+n.birds <- as.vector(tapply(hmn$date, INDEX=list(hmn$LOC, hmn$yearfac),
+                 FUN=function(x){length(which(!is.na(x)))}))
+
+# Save the new molt quantile data into a new data.frame called MOLT.quants
+ARR.quants <- cbind.data.frame(LOC, yr, n.birds, ARR.quants)
+ARR.quants <- ARR.quants[complete.cases(ARR.quants),]
+
+# remove variables from the memory that are no longer needed
+rm(quant.temp, MOLT.quant.05, MOLT.quant.25, MOLT.quant.50, MOLT.quant.75, MOLT.quant.95, n.birds, LOC, yr)
+```
+
 The number of birds captured at each site across the time series:
-
-**Note: Is the EC point for 2006 accurate? That's a lot of birds to process!**
-
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=6, fig.width=8}
 ggplot(yearly.catch.stat, aes(yr, n.birds), group=LOC) + geom_point() + geom_line() + 
   xlab("Year") + ylab("Number of BTHU captured") + 
@@ -54,43 +111,18 @@ ggplot(yearly.catch.stat, aes(yr, n.birds), group=LOC) + geom_point() + geom_lin
 ```
 
 
-The number of birds captured at each site across the time series, showed as +/- the average number of birds caught at that site (doesn't take into account changes in effort since I don't have that data:
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
-summary <- 
-  yearly.catch.stat %>%
-  select(LOC, yr, n.birds) %>%
-  group_by(LOC) %>%
-  mutate(total=sum(n.birds),
-         avg = mean(n.birds),
-         diff = n.birds - avg)
-
-ggplot(summary, aes(yr, diff), group=LOC) + geom_point() + 
-  xlab("Year") + ylab("Number of BTHU captured +/- the average at a site") + 
-  theme(text = element_text(size=15)) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + 
-  scale_x_continuous(limits=c(2002, 2012), breaks=2002:2012) +
-  geom_hline(aes(yintercept=0, col="gray")) + stat_smooth() +
-  theme_bw()
-```
-
 For the arrival data, we will use the median arrival data at a given site and year as our main response variable. This is calculated 50th quantile of the arrival distribution. It should be noted that in the dataset, the year is denoted as 1900, but this can be ignored - the month and day portions of the date are accurate.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
-# make sure that the quantile variable (already summarized) is classified as.Date
-yearly.catch.stat$sess.quant.05 <- as.Date(yearly.catch.stat$sess.quant.05, origin="2015-01-01")
-yearly.catch.stat$sess.quant.25 <- as.Date(yearly.catch.stat$sess.quant.25, origin="2015-01-01")
-yearly.catch.stat$sess.quant.50 <- as.Date(yearly.catch.stat$sess.quant.50, origin="2015-01-01")
-yearly.catch.stat$sess.quant.75 <- as.Date(yearly.catch.stat$sess.quant.75, origin="2015-01-01")
-yearly.catch.stat$sess.quant.95 <- as.Date(yearly.catch.stat$sess.quant.95, origin="2015-01-01")
 
-#plot the distribution of the arrival data
-ggplot(yearly.catch.stat, aes(yr, sess.quant.50)) + geom_point(aes(size=n.birds)) + theme_bw() + 
+#plot the distribution of the arrival data -- FIXME
+ggplot(ARR.quants, aes(as.numeric(yr), ARR.quant.50)) + geom_point(aes(size=n.birds)) + theme_bw() + 
   stat_smooth() + scale_x_continuous(breaks=seq(2002, 2012, 2))
 
-bthu.range <- range(yearly.catch.stat$sess.quant.50)
-bthu.mean <- mean(yearly.catch.stat$sess.quant.50)
-bthu.mean.2006 <- mean(yearly.catch.stat[yearly.catch.stat$yr==2006,]$sess.quant.50)
-bthu.mean.2010 <- mean(yearly.catch.stat[yearly.catch.stat$yr==2010,]$sess.quant.50)
+bthu.range <- range(ARR.quants$ARR.quant.50)
+bthu.mean <- mean(ARR.quants$ARR.quant.50)
+bthu.mean.2006 <- mean(ARR.quants[ARR.quants$yr==2006,]$ARR.quant.50)
+bthu.mean.2010 <- mean(ARR.quants[ARR.quants$yr==2010,]$ARR.quant.50)
 ```
 
 Values for the 50th quantile (median) arrival date ranged from `r bthu.range[1]` to `r bthu.range[2]` with a mean arrival date of `r bthu.mean`. In 2006, the mean arrival date was `r bthu.mean.2006` and 2010 it was `r bthu.mean.2010`.
@@ -101,28 +133,15 @@ Although molt stage was observed across the entire body of the hummingbird, the 
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=5, fig.width=7}
 #keep only the variables you need
-molt.dat <- site.dat[, c("LOC", "PriMary.Molt", "yearfac", "mofac")]
-
-#simplify molt to 3 categories (M-8 = early, 9-0 = late, F-L = complete)
-molt.dat$molt3class <- as.character(molt.dat$PriMary.Molt)
-molt.dat$molt3class[molt.dat$molt3class %in% c("M", "R", "1", "2", "3", "4", "5", "6", "7", "8")] <- "early"
-molt.dat$molt3class[molt.dat$molt3class %in% c("9", "0")] <- "late"
-molt.dat$molt3class[molt.dat$molt3class %in% c("F", "L")] <- "complete"
-
-#make an ordered categorical variable describing primary molt
-ordermolt <- function(x){ordered(x, levels=c("M","R",1:8,0,9,"F","L"))}
-molt.dat$PriMary.Molt <- ordermolt(molt.dat$PriMary.Molt)
-
-ordermolt3 <- function(x){ordered(x, levels = c("early", "late", "complete"))}
-molt.dat$molt3class <- ordermolt3(molt.dat$molt3class)
+molt.dat <- hmn[, c("LOC", "PriMary.Molt", "molt3class", "yearfac", "mofac")]
 
 #plot molt stage by year for comparison
 sd <- molt.dat[complete.cases(molt.dat),]
-ggplot(sd, aes(PriMary.Molt)) + geom_histogram() + xlab("Primary Molt Stage") + ylab("number birds") +
+ggplot(sd, aes(PriMary.Molt)) + geom_bar() + xlab("Primary Molt Stage") + ylab("number birds") +
  theme_bw() +  facet_wrap(~yearfac)
 
 #plot molt stage by year for comparison using only the 3 classes
-ggplot(sd, aes(molt3class)) + geom_histogram() + xlab("Primary Molt Stage") + ylab("number birds") +
+ggplot(sd, aes(molt3class)) + geom_bar() + xlab("Primary Molt Stage") + ylab("number birds") +
  theme_bw() +  facet_wrap(~yearfac)
 ```
 
@@ -155,13 +174,13 @@ n.birds <- as.vector(tapply(molt.dat$PriMary.Molt, INDEX=list(molt.dat$LOC, molt
 
 # Save the new molt quantile data into a new data.frame called MOLT.quants
 MOLT.quants <- cbind.data.frame(LOC, yr, n.birds, MOLT.quants)
+MOLT.quants <- MOLT.quants[complete.cases(MOLT.quants),]
 
 # remove variables from the memory that are no longer needed
 rm(quant.temp, MOLT.quant.05, MOLT.quant.25, MOLT.quant.50, MOLT.quant.75, MOLT.quant.95, n.birds, LOC, yr)
 
 
 # USING ONLY THE 3 MOLT CLASSES
-
 # Calculate molt quantiles
 getMOLTquant3 <- function(quantile.){
   tapply(molt.dat$molt3class, INDEX=list(molt.dat$LOC, molt.dat$yearfac),
@@ -188,22 +207,21 @@ n.birds <- as.vector(tapply(molt.dat$molt3class, INDEX=list(molt.dat$LOC, molt.d
 
 # Save the new molt quantile data into a new data.frame called MOLT.quants
 MOLT.quants.3 <- cbind.data.frame(LOC, yr, n.birds, MOLT.quants.3)
+MOLT.quants.3 <- MOLT.quants.3[complete.cases(MOLT.quants.3),]
 
 # remove variables from the memory that are no longer needed
 rm(quant.temp.3, MOLT.quant.05.3, MOLT.quant.25.3, MOLT.quant.50.3, MOLT.quant.75.3, MOLT.quant.95.3, n.birds, LOC, yr)
 ```
 
 
-The median molt stages for BTHU included later stages of early molt, late molt, and completed molt (stages 7-L).
+The median molt stages for BTHU included later stages of early molt, late molt, and completed molt (all stages represented: 7-L).
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=6}
-mq50 <- MOLT.quants[,c(1:3,6)]
-mq50 <- mq50[complete.cases(mq50),]
 
-ggplot(mq50, aes(yr, MOLT.quant.50)) + geom_point(aes(size=n.birds), alpha=0.5) + 
+ggplot(MOLT.quants, aes(yr, MOLT.quant.50)) + geom_point(aes(size=n.birds), alpha=0.5) + 
   xlab("Year") + ylab("Median molt stage") + theme_bw()
 
-moltscores <- table(mq50$MOLT.quant.50)
+moltscores <- table(MOLT.quants$MOLT.quant.50)
 
 # take a weighted average of the discrete classes for the mean molt score
 num = sum(moltscores)
@@ -217,20 +235,18 @@ meanmolt = moltscores[round(sum(index * p))]
 The median molt stages for BTHU included later stages of early molt (M-8), late molt (9-0), and completed molt (F-L).
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=6}
-mq50 <- MOLT.quants.3[,c(1:3,6)]
-mq50 <- mq50[complete.cases(mq50),]
 
-ggplot(mq50, aes(yr, MOLT.quant.50.3)) + geom_point(aes(size=n.birds), alpha=0.5) + 
+ggplot(MOLT.quants.3, aes(yr, MOLT.quant.50.3)) + geom_point(aes(size=n.birds), alpha=0.5) + 
   xlab("Year") + ylab("Median molt stage") + theme_bw()
 
-moltscores <- table(mq50$MOLT.quant.50.3)
+moltscores3 <- table(MOLT.quants.3$MOLT.quant.50.3)
 
 # take a weighted average of the discrete classes for the mean molt score
-num = sum(moltscores)
-p = apply(moltscores, 1, function(x) {x/num} )
-index = c(1:length(moltscores))
+num = sum(moltscores3)
+p = apply(moltscores3, 1, function(x) {x/num} )
+index = c(1:length(moltscores3))
 
-meanmolt = moltscores[round(sum(index * p))]
+meanmolt = moltscores3[round(sum(index * p))]
 ```
 
 Birds were most commonly found in late molt stages (10-9; `r round(((moltscores[11] + moltscores[12]) / sum(moltscores)) * 100, 2)` %) and in completed molt (F-L; `r round(((moltscores[13] + moltscores[14]) / sum(moltscores)) * 100, 2)` %) compared to premolt and early molt stages (M-8; `r round((sum(moltscores[1:10]) / sum(moltscores)) * 100, 2)` %). The weighted average molt stage observed across the sites and years was 9 (late molt).
@@ -245,7 +261,7 @@ Body fat and mass are positively correlated.
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
 # manipulate fat and mass data in a new dataframe called body.dat
-body.dat <- site.dat
+body.dat <- hmn[, c("LOC", "Fat", "Weight", "yearfac", "mofac")]
 
 body.dat$Fat[body.dat$Fat=="P"] <- 0
 orderfat <- function(x){ordered(x, levels=c(0, "T" ,1:3))}
@@ -265,8 +281,8 @@ ggplot(body.dat, aes(Weight)) + geom_histogram(binwidth=0.25) + xlab("Body Mass 
  theme_bw() +  facet_wrap(~yearfac)
 
 #plot body fat by year for comparison
-sd <- body.dat[complete.cases(body.dat),]
-ggplot(sd, aes(Fat)) + geom_histogram(binwidth=0.25) + xlab("Fat Score") + ylab("number birds") +
+body.dat.cc <- body.dat[complete.cases(body.dat),]
+ggplot(body.dat.cc, aes(Fat)) + geom_bar() + xlab("Fat Score") + ylab("number birds") +
  theme_bw() +  facet_wrap(~yearfac)
 ```
 
@@ -278,14 +294,9 @@ Most BTHU were observed with low fat (0; `r round((fatscores[1] / sum(fatscores)
 Bodymass did not show a strong relationship to molt:
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
-ordermolt <- function(x){ordered(toupper(x), levels=c("M","R",1:8,0,9,"F","L"))}
-body.dat$PriMary.Molt <- ordermolt(body.dat$PriMary.Molt)
 
-plot(body.dat$Weight ~ body.dat$PriMary.Molt, col="light grey", pch=19, 
+plot(hmn$Weight ~ hmn$PriMary.Molt, col="light grey", pch=19, 
      xlab = "Primary Molt Stage", ylab = "Mass (grams)", cex.axis = 1.5, cex.lab = 1.5)
-
-# keep only the columns we need for the main analysis
-body.dat <- body.dat[,c("LOC", "Weight", "Fat", "yearfac", "mofac")]
 ```
 
 
@@ -331,11 +342,18 @@ ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + stat_s
 
 ```{r}
 # Combine each of the response variable datasets with the climate data for analysis
-yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)                          # arrival
+# yearly.catch.stat <- merge(yearly.catch.stat, yearly.climate)                          # arrival
+# yearly.molt.stat <- merge(x=MOLT.quants, y=yearly.climate, by='yr')                    # molt
+# yearly.weight.stat <- merge(x=body.dat, y=yearly.climate, by.x='yearfac', by.y='yr')   # mass & fat
+```
+
+
+```{r}
+# Combine each of the response variable datasets with the climate data for analysis
+yearly.arrival.stat <- merge(x=ARR.quants, y=yearly.climate, by='yr')                  # arrival
 yearly.molt.stat <- merge(x=MOLT.quants, y=yearly.climate, by='yr')                    # molt
 yearly.weight.stat <- merge(x=body.dat, y=yearly.climate, by.x='yearfac', by.y='yr')   # mass & fat
 ```
-
 
 We can summarize the responses of all the variables together, without distinguishing for site-level effects. In general, winters with lower NDVI (resource proxy) were correlated with later migration arrival date and earlier stage molt. Winters with more cold periods were correlated with earlier stage molt, but didn't have a strong relationship to timing of arrival. There were not significant correlations among the mass and fat variables for migrating BTHU and the winter environmental predictor variables.
 
