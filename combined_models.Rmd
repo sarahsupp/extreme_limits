@@ -27,10 +27,11 @@ There are several main datasets that need to be imported to run the final analys
  1. HMN migration season capture data (arrival, molt, body mass and body fat data)
  2. Winter climate summary data
 ```{r}
-# import raw HMN data
+# If you want to see the raw HMN data - we use a subset of this data, for March-June sampling sessions, defined by S. Wethington
 rawdat = read.csv("/home/sarah/Documents/GitHub/extreme_limits/data/HMN_AZ_low&mid_elev_BTLH2002-2012.csv")
 
 # Winter: weather data summarized for NDVI and temperature
+load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 load("/home/sarah/Documents/GitHub/extreme_limits/data/yearly.climate.rdata")
 ```
 
@@ -351,7 +352,7 @@ ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + stat_s
 ```{r}
 # Combine each of the response variable datasets with the climate data for analysis
 yearly.arrival.stat <- merge(x=ARR.quants, y=yearly.climate, by='yr')                  # arrival
-yearly.molt.stat <- merge(x=MOLT.quants, y=yearly.climate, by='yr')                    # molt
+yearly.molt.stat <- merge(x=MOLT.quants.3, y=yearly.climate, by='yr')                    # molt
 yearly.weight.stat <- merge(x=body.dat, y=yearly.climate, by.x='yearfac', by.y='yr')   # mass & fat
 ```
 
@@ -366,9 +367,9 @@ p1 <- ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(yearly.Te.
 
 p2 <- ggplot(yearly.molt.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
 
-p3 <- ggplot(ycs_cc, aes(yearly.Te.10C.q, sess.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Timing of spring arrival\n") + xlab("")
+p3 <- ggplot(yearly.arrival.stat, aes(yearly.Te.10C.q, ARR.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Timing of spring arrival\n") + xlab("")
 
-p4 <- ggplot(ycs_cc, aes(winterNDVI, sess.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
+p4 <- ggplot(yearly.arrival.stat, aes(winterNDVI, ARR.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
 
 p5 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Body mass (grams)\n") + xlab("")
 
@@ -387,17 +388,25 @@ grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol=2)
 We used a function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **median arrival (50th quantile)** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here we  treat arrival date as 'numeric'. 
 
 ```{r}
-attach(yearly.catch.stat)
-mod.evaluation(yname='sess.quant.50', centering='CGM', stand=T, 
+library(lubridate)
+#if date is treated as numeric, would it just be easier to convert all dates to julian day here?
+yearly.arrival.stat$ARR.quant.50.jday = yday(yearly.arrival.stat$ARR.quant.50)
+#ensure that n.birds is also treated as numeric so weighting works correctly
+yearly.arrival.stat$n.birds = as.numeric(yearly.arrival.stat$n.birds)
+
+attach(yearly.arrival.stat)
+
+mod.evaluation(yname='ARR.quant.50.jday', centering='CGM', stand=T, 
                ordered.fac.treatment = "as.num", log.D=T, 
-               R="winterNDVI") 
-detach(yearly.catch.stat)
+               R="winterNDVI", D="yearly.Te.10C.q") 
+detach(yearly.arrival.stat) #Used to be with yearly.catch.stat, n.birds needs to weighted.
 ```
 
 We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **median molt stage (50th quantile)** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat  molt stage as 'binomial' since the distance between categories is not assumed to be constant. See the *methods* section of the manuscript for more details.
 ````{r}
+# run the model using the 3 molt classes only 
 attach(yearly.molt.stat)
-mod.evaluation(yname='MOLT.quant.50', centering='CGM', stand=T, 
+mod.evaluation(yname='MOLT.quant.50.3', centering='CGM', stand=T, 
                ordered.fac.treatment = "as.binomial", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q")
 detach(yearly.molt.stat)
