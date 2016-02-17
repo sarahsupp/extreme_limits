@@ -12,6 +12,7 @@ The script uses migratory capture data for Broad-tailed Hummingbird (BTHU) at si
 ##Import Libraries and Source Code scripts
 ```{r, echo=FALSE, warning=FALSE, message=FALSE} 
 library(ggplot2)
+library(ggrepel)
 library(gridExtra)
 library(lattice)
 library(latticeExtra)
@@ -53,11 +54,21 @@ site.dat$PriMary.Molt3[site.dat$PriMary.Molt3 %in% c("F", "L")] <- "complete"
 
 ordermolt3 <- function(x){ordered(x, levels = c("early", "late", "complete"))}
 site.dat$PriMary.Molt3 <- ordermolt3(site.dat$PriMary.Molt3)
+
+#calculate date as julian day of the year
+site.dat$jday <- yday(date)
 ```
 
 ## Exploring the Migration Data
 
 ### *BTHU Arrival at southeastern Arizona sites*
+
+Let's plot the distribution of arrival dates across all the sites using the raw data:
+```{r}
+#plot arrival dates by year
+ggplot(site.dat, aes(jday)) + geom_histogram() + xlab("Julian day of the year") + ylab("number of birds") +
+ theme_bw() +  facet_wrap(~yearfac)
+```
 
 First, let's calculate the arrival quantiles for the migrating birds at each site and year
 ```{r}
@@ -321,12 +332,14 @@ Average winter NDVI was positively correlated with cumulative precipitation, so 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
 
 lm1 = lm(winterNDVI ~ wintercumpre, data = yearly.climate)
+pearson_cor <- cor(yearly.climate$wintercumpre, yearly.climate$winterNDVI)
 
 # plot precipitation correlation with NDVI in winter - strong
-ggplot(yearly.climate, aes(wintercumpre, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
+ggplot(yearly.climate, aes(wintercumpre, winterNDVI)) + geom_point() + geom_text_repel(aes(label=yr)) + 
+  stat_smooth(method="lm") + 
   ylab("average winter NDVI") + xlab("cumulative winter precip (mm)") + #geom_text(aes(label=yr)) +
   theme_classic() + theme(text = element_text(size=15)) + 
-  ggtitle(paste("R2 = ", round(summary(lm1)$r.sq, 2)))
+  ggtitle(paste("Pearson's Cor = ", round(pearson_cor, 2)))
 ```
 
 NDVI and operative temperature were not significantly correlated, although there were some years when the percentile of daily operative temperatures was particularly high and NDVI was particularly low. 
@@ -334,12 +347,13 @@ NDVI and operative temperature were not significantly correlated, although there
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
 
 lm2 = lm(winterNDVI ~ yearly.Te.10C.q, data = yearly.climate)
+pearson_cor2 <- cor(yearly.climate$yearly.Te.10C.q, yearly.climate$winterNDVI)
 
 # plot NDVI correlation with physiological demand - weak
-ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point() + stat_smooth(method="lm") + 
-  ylab("average winter NDVI") + xlab("percent days with Te < 10 C") + geom_text(aes(label=yr)) +
+ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point(alpha=0.75) + #stat_smooth(method="lm") + 
+  ylab("average winter NDVI") + xlab("percentile days with Te \u2264 10 C") + geom_text_repel(aes(label=yr)) +
   theme_classic() + theme(text = element_text(size=15)) + 
-  ggtitle(paste("R2 = ", round(summary(lm2)$r.sq, 2)))
+  ggtitle(paste("Pearson's Cor = ", round(pearson_cor2, 2)))
 ```
 
 
@@ -380,9 +394,9 @@ p5 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly
 
 p6 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Weight)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
 
-p7 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Fat score\n") + xlab("\nPhysiological demand (D)")
+p7 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Fat score\n") + xlab("\nPercentile days with Te \u2264 10 C")
 
-p8 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("\nResource availability (R)")
+p8 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("\nAverage winter NDVI")
 
 grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol=2)
 ```
