@@ -415,16 +415,6 @@ mod.evaluation(yname='jday.50', centering='CGM', standardisation=T,
 detach(yearly.arrival.stat) #Used to be with yearly.catch.stat, n.birds needs to weighted.
 ```
 
-**Molt as 14 classes:** We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **median molt stage (50th quantile)** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat  molt stage as 'binomial' since the distance between categories is not assumed to be constant. See the *methods* section of the manuscript for more details.
-````{r}
-# run the model using ALL the molt classes 
-attach(yearly.molt.stat)
-mod.evaluation(yname='MOLT.quant.50', centering='CGM', standardisation=T, 
-               ordered.fac.treatment = "as.binomial", log.D=T, 
-               R="winterNDVI", D="yearly.Te.10C.q")
-detach(yearly.molt.stat)
-````
-
 **Molt as 3 classes:** We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **median molt stage (50th quantile)** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat  molt stage as 'binomial' since the distance between categories is not assumed to be constant. See the *methods* section of the manuscript for more details.
 ````{r}
 # run the model using the 3 molt classes only 
@@ -514,6 +504,21 @@ ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10
   geom_point() + theme_bw() + stat_smooth(method="lm", aes(group=1)) + 
   ylab("fat score") +  xlab("Percentile daily temps < 10C") + facet_wrap(~LOC)
 ```
+
+### Molt as 14 Classes
+
+We originally used all 14 classes of molt for the main model, but a reviewer suggested that a simplified look at molt (early, late, complete) might actually be more useful. The simplified version is now included in the main manuscript, but the detailed version is here. Results are similar, but the best model flips from additive (D_R for 3 molt classes) to interactive (DR for 14 molt classes).
+
+**Molt as 14 classes:** We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **median molt stage (50th quantile)** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat  molt stage as 'binomial' since the distance between categories is not assumed to be constant. See the *methods* section of the manuscript for more details.
+````{r}
+# run the model using ALL the molt classes 
+attach(yearly.molt.stat)
+mod.evaluation(yname='MOLT.quant.50', centering='CGM', standardisation=T, 
+               ordered.fac.treatment = "as.binomial", log.D=T, 
+               R="winterNDVI", D="yearly.Te.10C.q")
+detach(yearly.molt.stat)
+````
+
 
 ### Biological Response Models for the 25th and 75th quantiles of the variables
 
