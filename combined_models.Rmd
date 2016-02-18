@@ -409,7 +409,7 @@ We used a function (mod.evaluation.R) to evaluate [hierarchical models](http://w
 ```{r}
 attach(yearly.arrival.stat)
 
-mod.evaluation(yname='jday.50', centering='CGM', stand=T, 
+mod.evaluation(yname='jday.50', centering='CGM', standardisation=T, 
                ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q") 
 detach(yearly.arrival.stat) #Used to be with yearly.catch.stat, n.birds needs to weighted.
@@ -419,7 +419,7 @@ detach(yearly.arrival.stat) #Used to be with yearly.catch.stat, n.birds needs to
 ````{r}
 # run the model using ALL the molt classes 
 attach(yearly.molt.stat)
-mod.evaluation(yname='MOLT.quant.50', centering='CGM', stand=T, 
+mod.evaluation(yname='MOLT.quant.50', centering='CGM', standardisation=T, 
                ordered.fac.treatment = "as.binomial", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q")
 detach(yearly.molt.stat)
@@ -429,7 +429,7 @@ detach(yearly.molt.stat)
 ````{r}
 # run the model using the 3 molt classes only 
 attach(yearly.molt3.stat)
-mod.evaluation(yname='MOLT.quant.50', centering='CGM', stand=T, 
+mod.evaluation(yname='MOLT.quant.50', centering='CGM', standardisation=T, 
                ordered.fac.treatment = "as.binomial", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q")
 detach(yearly.molt3.stat)
@@ -439,7 +439,8 @@ We used the function (mod.evaluation.R) to evaluate [hierarchical models](http:/
 ```{r}
 attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
-mod.evaluation(yname='Weight', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
+mod.evaluation(yname='Weight', centering='CGM', standardisation=T, 
+               ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
 detach(yearly.weight.stat)
 ```
@@ -448,7 +449,8 @@ We used the function (mod.evaluation.R) to evaluate [hierarchical models](http:/
 ```{r}
 attach(yearly.weight.stat)
 #http://www.quantpsy.org/interact/interactions.htm
-mod.evaluation(yname='Fat', centering='CGM', stand=T, ordered.fac.treatment = "as.num", log.D=T, 
+mod.evaluation(yname='Fat', centering='CGM', standardisation=T, 
+               ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q", N=NULL)
 detach(yearly.weight.stat)
 ```

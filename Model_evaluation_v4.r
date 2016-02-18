@@ -222,15 +222,18 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   #in the D*R model, under what conditions are the D (R) terms negative?
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   cat("Conditional effects of predictors in full model, i.e. including R*D interaction\n")
-  #win.graph(w=8,h=8) #FIXME: REDO in ggplot so it can be plotted in mac and linux
+  #win.graph(w=8,h=8) 
   #par(mfcol=c(2,2))
   
   r1 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, plott=F)
   r2 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, switch.vars = T, plott=F)
   
   r12 <- c(-1,1)*max(abs(c(r1,r2)), na.rm=T)
+  
+    # Plot conditional effects of D on B
     r1 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, ylim.=r12)
-  r2 <- Plot_conditional_effects_interaction_models(mymod=mod.DR,ylim.=r12, switch.vars = T)
+    # Plot conditional effects of R on B
+    r2 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, ylim.=r12, switch.vars = T)
     
   #++++++++++++++++++++++++++++++++++++++++++++++++++++++++
   # get the AIC  
