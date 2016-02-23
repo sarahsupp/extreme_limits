@@ -228,7 +228,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   r1 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, plott=F)
   r2 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, switch.vars = T, plott=F)
   
-  r12 <- c(-1,1)*max(abs(c(r1,r2)), na.rm=T)
+  r12 <- c(-1,1)*max(abs(c(r1[[1]],r2[[1]])), na.rm=T)
   
     # Plot conditional effects of D on B
     r1 <- Plot_conditional_effects_interaction_models(mymod=mod.DR, ylim.=r12)
@@ -379,5 +379,7 @@ mod.evaluation <- function(yname, D = "yearly.Te.10C.q", R = "NDVI", N = "n.bird
   cat("\nAIC of best model:", AIC(get(rownames(mod.eval)[1])), "\n")
   cat("There were", length(y), "observations and", length(unique(LOC)), "groups in the model.")
   cat("\nModel evaluation completed and tabulated:\n")
-  return(mod.eval)
+  
+  # returns model evaluation results, and figures for interaction NDVI x Te on B (r1[[2]]) and interaction Te x NDVI on B (r2[[2]])
+  return(list(mod.eval, r1[[2]], r2[[2]]))
 }

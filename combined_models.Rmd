@@ -1,7 +1,7 @@
 ---
 title: "Combined Model and Figure Output"
 author: "Sarah Supp"
-date: "01/25/2016"
+date: "02/22/2016"
 output: word_document
 ---
 
@@ -56,7 +56,7 @@ ordermolt3 <- function(x){ordered(x, levels = c("early", "late", "complete"))}
 site.dat$PriMary.Molt3 <- ordermolt3(site.dat$PriMary.Molt3)
 
 #calculate date as julian day of the year
-site.dat$jday <- yday(date)
+site.dat$jday <- yday(site.dat$date)
 ```
 
 ## Exploring the Migration Data
@@ -64,13 +64,15 @@ site.dat$jday <- yday(date)
 ### *BTHU Arrival at southeastern Arizona sites*
 
 Let's plot the distribution of arrival dates across all the sites using the raw data:
+
 ```{r}
 #plot arrival dates by year
-ggplot(site.dat, aes(jday)) + geom_histogram() + xlab("Julian day of the year") + ylab("number of birds") +
+ggplot(site.dat, aes(jday)) + geom_histogram(binwidth=7) + xlab("Julian day of the year") + ylab("number of birds") +
  theme_bw() +  facet_wrap(~yearfac)
 ```
 
 First, let's calculate the arrival quantiles for the migrating birds at each site and year
+
 ```{r}
 #keep only the variables you need
 arrival.dat <- site.dat[, c("LOC", "date", "yearfac", "mofac")]
@@ -112,13 +114,16 @@ ARR.quants$jday.50 <- yday(ARR.quants$ARR.quant.50)
 rm(quant.temp, ARR.quant.05, ARR.quant.25, ARR.quant.50, ARR.quant.75, ARR.quant.95, n.birds, LOC, yr)
 ```
 
+
 The number of birds captured at each site across the time series:
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=6, fig.width=8}
 ggplot(ARR.quants, aes(as.numeric(as.character(yr)), n.birds), group=LOC) + geom_point() + geom_line() + 
-  xlab("Year") + ylab("Number of BTHU captured") + 
-  theme(text = element_text(size=15)) + theme(axis.text.x=element_text(angle=90,hjust=1,vjust=0.5)) + 
+  xlab("Year") + ylab("Number of birds") + 
+  theme(text = element_text(size=15)) + 
   scale_x_continuous(limits=c(2002, 2012), breaks=seq(2002, 2012, 2)) +
-  theme_bw() + facet_wrap(~LOC)
+  theme_bw() + facet_wrap(~LOC) +
+  theme(axis.text.x=element_text(angle=90,hjust=0,vjust=0.5))
 ```
 
 
@@ -131,12 +136,29 @@ ggplot(ARR.quants, aes(as.numeric(as.character(yr)), jday.50)) + geom_point(aes(
   stat_smooth() + scale_x_continuous(breaks=seq(2002, 2012, 2)) + xlab("Year") + ylab("Arrival as Julian day of year")
 
 bthu.range <- range(ARR.quants$jday.50)
+bthu.range <- paste(month(as.Date(bthu.range, origin="2006-01-01")), day(as.Date(bthu.range, origin="2006-01-01")), sep="-")
 bthu.mean <- paste(month(as.Date(mean(ARR.quants$jday.50), origin="2015-01-01")), day(as.Date(mean(ARR.quants$jday.50), origin="2015-01-01")), sep="-")
+bthu.sd <-round(sd(ARR.quants$jday.50), 2)
+
+#low NDVI years
 bthu.mean.2006 <- paste(month(as.Date(mean(ARR.quants[ARR.quants$yr==2006,]$jday.50), origin="2006-01-01")), day(as.Date(mean(ARR.quants[ARR.quants$yr==2006,]$jday.50), origin="2006-01-01")), sep="-")
-bthu.mean.2003 <- paste(month(as.Date(mean(ARR.quants[ARR.quants$yr==2003,]$jday.50), origin="2003-01-01")), day(as.Date(mean(ARR.quants[ARR.quants$yr==2003,]$jday.50), origin="2003-01-01")), sep="-")
+bthu.mean.2009 <- paste(month(as.Date(mean(ARR.quants[ARR.quants$yr==2009,]$jday.50), origin="2003-01-01")), day(as.Date(mean(ARR.quants[ARR.quants$yr==2009,]$jday.50), origin="2003-01-01")), sep="-")
+bthu.mean.2011 <- paste(month(as.Date(mean(ARR.quants[ARR.quants$yr==2011,]$jday.50), origin="2006-01-01")), day(as.Date(mean(ARR.quants[ARR.quants$yr==2011,]$jday.50), origin="2006-01-01")), sep="-")
+
+#high NDVI years
+bthu.mean.2007 <- paste(month(as.Date(mean(ARR.quants[ARR.quants$yr==2007,]$jday.50), origin="2003-01-01")), day(as.Date(mean(ARR.quants[ARR.quants$yr==2007,]$jday.50), origin="2003-01-01")), sep="-")
+bthu.mean.2010 <- paste(month(as.Date(mean(ARR.quants[ARR.quants$yr==2010,]$jday.50), origin="2006-01-01")), day(as.Date(mean(ARR.quants[ARR.quants$yr==2010,]$jday.50), origin="2006-01-01")), sep="-")
+bthu.mean.2012 <- paste(month(as.Date(mean(ARR.quants[ARR.quants$yr==2012,]$jday.50), origin="2003-01-01")), day(as.Date(mean(ARR.quants[ARR.quants$yr==2012,]$jday.50), origin="2003-01-01")), sep="-")
 ```
 
-Values for the 50th quantile (median) arrival date ranged from `r bthu.range[1]` to `r bthu.range[2]` with a mean arrival date of `r bthu.mean`. In 2006, the mean arrival date was `r bthu.mean.2006` and 2003 it was `r bthu.mean.2003`.
+Values for the 50th quantile (median) arrival date ranged from (MM/DD) `r bthu.range[1]` to `r bthu.range[2]` with a mean arrival date of `r bthu.mean` and a standard deviation of `r bthu.sd` days.
+
+Following low-resource winters (low NDVI; 05-06, 08-09, 10-11), the mean arrival date was 
+`r bthu.mean.2006`, `r bthu.mean.2009`, and `r bthu.mean.2011`, respectively.
+
+Following high-resource winters (high NDVI; 06-07, 09-10, 11-12), the mean arrival date was 
+`r bthu.mean.2007`, `r bthu.mean.2010`, and `r bthu.mean.2012`, respectively.
+
 
 ### *BTHU Molt Stage for primary (flight) feathers*
 
@@ -253,15 +275,16 @@ ggplot(MOLT.quants.3, aes(yr, MOLT.quant.50)) + geom_point(aes(size=n.birds), al
 
 moltscores3 <- table(MOLT.quants.3$MOLT.quant.50)
 
-# take a weighted average of the discrete classes for the mean molt score
-num = sum(moltscores3)
-p = apply(moltscores3, 1, function(x) {x/num} )
-index = c(1:length(moltscores3))
-
-meanmolt = moltscores3[round(sum(index * p))]
+# coldest winter with lowest NDVI (extreme year: 2011)
+molt.2011 <- MOLT.quants.3[MOLT.quants.3$yr==2011,]
+molt.2011 <- table(molt.2011$MOLT.quant.50)
+molt.50.2011 <- c(round((molt.2011/sum(molt.2011)) * 100, 2))
 ```
 
-Using the simplified version of molt, BTHU were most commonly found in late molt stages (10-9; `r round((moltscores3[2] / sum(moltscores3)) * 100, 2)` %) and in completed molt (F-L; `r round((moltscores3[3] / sum(moltscores3)) * 100, 2)` %) compared to premolt and early molt stages (M-8; `r round((moltscores3[1] / sum(moltscores3)) * 100, 2)` %).
+Using the simplified version of molt, 50th quantile BTHU were most commonly found in late molt stages (10-9; `r round((moltscores3[2] / sum(moltscores3)) * 100, 2)` %) and in completed molt (F-L; `r round((moltscores3[3] / sum(moltscores3)) * 100, 2)` %) compared to premolt and early molt stages (M-8; `r round((moltscores3[1] / sum(moltscores3)) * 100, 2)` %).
+
+Following the coldest winter with the lowest NDVI (2010-2011), 50th quantile BTHU were found only in 
+early (`r molt.50.2011[1]`%) and late (`r molt.50.2011[2]`%) stages.
 
 
 ### *BTHU Migratory Body Mass and Fat Scores*
@@ -308,6 +331,7 @@ Most BTHU were observed with low fat (0; `r round((fatscores[1] / sum(fatscores)
 
 
 Bodymass did not show a strong relationship to molt:
+
 ```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=5}
 #plot both ways, using all and simplified molt stages
 ggplot(site.dat, aes(PriMary.Molt, Weight)) + geom_boxplot(fill="gray") + xlab("Molt Stage") + ylab("Body Mass (g)") + theme_bw()
@@ -351,9 +375,9 @@ pearson_cor2 <- cor(yearly.climate$yearly.Te.10C.q, yearly.climate$winterNDVI)
 
 # plot NDVI correlation with physiological demand - weak
 ggplot(yearly.climate, aes(yearly.Te.10C.q, winterNDVI)) + geom_point(alpha=0.75) + #stat_smooth(method="lm") + 
-  ylab("average winter NDVI") + xlab("percentile days with Te \u2264 10 C") + geom_text_repel(aes(label=yr)) +
-  theme_classic() + theme(text = element_text(size=15)) + 
-  ggtitle(paste("Pearson's Cor = ", round(pearson_cor2, 2)))
+  ylab("mean winter NDVI") + xlab("percentile days with Te \u2264 10 C") + geom_text_repel(aes(label=yr)) +
+  theme_classic() + theme(text = element_text(size=15)) #+ 
+  #ggtitle(paste("Pearson's Cor = ", round(pearson_cor2, 2)))
 ```
 
 
@@ -381,7 +405,7 @@ We can summarize the responses of all the variables together, without distinguis
 # keep only years with complete data for the arrival data
 #ycs_cc = yearly.catch.stat[complete.cases(yearly.catch.stat),]
 
-#overall response
+#overall response - Figure 5
 p1 <- ggplot(yearly.molt3.stat[complete.cases(yearly.molt.stat),], aes(yearly.Te.10C.q, MOLT.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Molt stage\n") + xlab("")
 
 p2 <- ggplot(yearly.molt3.stat[complete.cases(yearly.molt.stat),], aes(winterNDVI, MOLT.quant.50)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("")
@@ -396,7 +420,7 @@ p6 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winter
 
 p7 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(yearly.Te.10C.q, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("Fat score\n") + xlab("\nPercentile days with Te \u2264 10 C")
 
-p8 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("\nAverage winter NDVI")
+p8 <- ggplot(yearly.weight.stat[complete.cases(yearly.weight.stat),], aes(winterNDVI, Fat)) + geom_point() + theme_classic() + theme(text = element_text(size=15)) + stat_smooth(method="lm", aes(group=1), col="black") + ylab("") + xlab("\nMean winter NDVI")
 
 grid.arrange(p1, p2, p3, p4, p5, p6, p7, p8, ncol=2)
 ```
@@ -409,20 +433,22 @@ We used a function (mod.evaluation.R) to evaluate [hierarchical models](http://w
 ```{r}
 attach(yearly.arrival.stat)
 
-mod.evaluation(yname='jday.50', centering='CGM', standardisation=T, 
+me_arr <- mod.evaluation(yname='jday.50', centering='CGM', standardisation=T, 
                ordered.fac.treatment = "as.num", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q") 
 detach(yearly.arrival.stat) #Used to be with yearly.catch.stat, n.birds needs to weighted.
+me_arr[[1]]
 ```
 
 **Molt as 3 classes:** We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **median molt stage (50th quantile)** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat  molt stage as 'binomial' since the distance between categories is not assumed to be constant. See the *methods* section of the manuscript for more details.
 ````{r}
 # run the model using the 3 molt classes only 
 attach(yearly.molt3.stat)
-mod.evaluation(yname='MOLT.quant.50', centering='CGM', standardisation=T, 
+me_molt3 <- mod.evaluation(yname='MOLT.quant.50', centering='CGM', standardisation=T, 
                ordered.fac.treatment = "as.binomial", log.D=T, 
                R="winterNDVI", D="yearly.Te.10C.q")
 detach(yearly.molt3.stat)
+me_molt3[[1]]
 ````
 
 We used the function (mod.evaluation.R) to evaluate [hierarchical models](http://www.quantpsy.org/interact/interactions.htm) of **body mass** as a linear function of annual physiological demand (percentile daily Te < 10 C) and resource availability (mean winter NDVI), allowing for a random intercept associated with 'site'. Here, we treat body mass as numeric.
@@ -445,6 +471,13 @@ mod.evaluation(yname='Fat', centering='CGM', standardisation=T,
 detach(yearly.weight.stat)
 ```
 
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.height=4, fig.width=8}
+# Figure 6
+# make interaction figure for the arrival data, which ranks interactive model as top
+grid.arrange(me_arr[[3]], me_arr[[2]], ncol=2)
+
+```
 
 
 ## Appendix
@@ -537,12 +570,12 @@ detach(yearly.arrival.stat)
 
 **25th Quantile Molt**
 ```{r}
-attach(yearly.molt.stat)
+attach(yearly.molt3.stat)
 #http://www.quantpsy.org/interact/interactions.htm
 mod.evaluation(yname='MOLT.quant.25', centering='CGM', stand=T, 
                ordered.fac.treatment = "as.binomial", 
                log.D=T, R="winterNDVI", D="yearly.Te.10C.q")
-detach(yearly.molt.stat)
+detach(yearly.molt3.stat)
 ```
 
 
@@ -560,10 +593,10 @@ detach(yearly.arrival.stat)
 
 **75th Quantile Molt**
 ```{r}
-attach(yearly.molt.stat)
+attach(yearly.molt3.stat)
 mod.evaluation(yname='MOLT.quant.75', centering='CGM', stand=T, 
                ordered.fac.treatment = "as.binomial", 
                log.D=T, R="winterNDVI", D="yearly.Te.10C.q")
-detach(yearly.molt.stat)
+detach(yearly.molt3.stat)
 ```
 

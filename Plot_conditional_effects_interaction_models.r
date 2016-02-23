@@ -21,6 +21,9 @@ Plot_conditional_effects_interaction_models <- function(
   ylim.=NULL,
   plott=T){
   
+  # will return an interaxn ggplot if plott==TRUE, if not, will return "NOT DONE"
+  interaxn = "NOT DONE"
+  
 #Variable names in the model
   vnames <- names(fixef(mymod))[2:3]
   if(switch.vars){
@@ -28,11 +31,11 @@ Plot_conditional_effects_interaction_models <- function(
   
   # Use actual names of predictor variables for plotting
   pred_vnames <- vnames
-  pred_vnames[pred_vnames=="D"] <- "Te"
-  pred_vnames[pred_vnames=="R"] <- "NDVI"
+  pred_vnames[pred_vnames=="D"] <- "Percentile days Te \u2264 10 C"
+  pred_vnames[pred_vnames=="R"] <- "mean winter NDVI"
   
   ylab. <- paste("Effect of ", pred_vnames[1], " on Beta", sep="")
-  xlab. <- paste(pred_vnames[2], " [s.d.]", sep="")
+  xlab. <- paste(pred_vnames[2], " (s.d.)", sep="")
 
   #Histograms of the variables
   if(plott){
@@ -81,11 +84,13 @@ y1 <- (x1_Slope + x1x2_Slope * z) + (1.9602 * sqrt(var_g10 + (2 * z * cov_g10_g3
 y2 <- (x1_Slope + x1x2_Slope * z) - (1.9602 * sqrt(var_g10 + (2 * z * cov_g10_g30) + ((z^2) * var_g30)))
 fy <- c(y1, rev(y2))
 fline <- (x1_Slope + x1x2_Slope * z)
+f0 <- array(0, c(1000)) 
 
 if (plott){
   fzy <- data.frame("fz"=fz, "fy"=fy, "z" = z, "fline" = fline)
-  interaxn <- ggplot(fzy, aes(fz, fy)) + geom_polygon(aes(fz, fy), fill="gray90") + xlab(xlab.) + ylab(ylab.) + 
-    geom_hline(yintercept=0, linetype="dashed") + geom_line(aes(z, fline)) + theme_bw()
+  interaxn <- ggplot(fzy, aes(fz, fy)) + geom_line(aes(fz, fy), col="gray90") + xlab(xlab.) + ylab(ylab.) + 
+    geom_hline(yintercept=0, linetype="dashed") + geom_line(aes(z, fline)) + 
+    scale_y_continuous(limits=c(-20,20)) + theme_classic() 
   print(interaxn)
 }
 
@@ -98,5 +103,5 @@ if (plott){
 #       lines(z, f0, lty=2) #horizontal dashed line at yintercept=0
 #   }
  
-return(range(c(f0, fline, fy)))
+return(list(range(c(f0, fline, fy)), interaxn))
 }
