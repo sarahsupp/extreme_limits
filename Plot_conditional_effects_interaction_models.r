@@ -34,7 +34,7 @@ Plot_conditional_effects_interaction_models <- function(
   pred_vnames[pred_vnames=="D"] <- "Percentile days Te \u2264 10 C"
   pred_vnames[pred_vnames=="R"] <- "mean winter NDVI"
   
-  ylab. <- paste("Effect of ", pred_vnames[1], " on Beta", sep="")
+  ylab. <- paste("Effect of ", pred_vnames[1], " on Biological Response", sep="")
   xlab. <- paste(pred_vnames[2], " (s.d.)", sep="")
 
   #Histograms of the variables
